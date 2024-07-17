@@ -1,0 +1,635 @@
+Ticket,Problem,Solution
+331451,There are charges for a phone number that I don't have and a phone I don't have on my cell phone bill.,Billing corrected
+331822,"Cannot login to MacBook - Password not accepted
+
+Peter confirmed that he was entering the correct password. ","Peter Marrello reached out to me via Teams, claiming that he is unable to log in to his MacBook's local account because the password wasn't working. I tried giving him all possible solutions, but none of them worked for him. The last resort was to guide him through macOS Recovery and help him create a new password using the FileVault Recovery Key. It worked and allowed him to create a new password."
+330935,"Laptop just has spinning circle not able to login; requesting for someone to go down to have a look as today is Council 
+
+- Laurie Robinson called in advising Genevieve is not able to log into her laptop; just getting a spinning circle; and they are requesting for someone to go onsite to have a look as today is Council; have tried calling Ray but got no reply; have spoken to Kos about ticket;",Laptop took some time to update.
+331768,"When I try to make a call it says""your home cellular company has not authorized us to provide service.  Please contact your home cellular company."" 
+
+I need my cell while working remotely.
+
+I am not in the office so please contact me via e-mail.",Rogers reset the network
+331654,"Please release any emails from support@cateater.com
+
+We require the license key ASAP for the recently purchased software Stop Motion Pro for STEM Recreation computers
+",The email was successfully released to the user
+331814,android phone so not updating,"Phone started updating email late. Advised client to try and restart the phone, check network connection, and reconnect to the network if issue occurs again."
+331815,"issue with transit self service, unable to log in","Account was locked, unlocking fixed the issue on transit self service side as well"
+330984,"S/N GG7YQ1WEJF89 - does not have a phone/data connection, unsure if it ever did. Would like more information. 
+","f data is required on the IPAD you will need to submit a request for a data plan for the IPAD.
+
+It is $14.99/month"
+331773,"client was informed that PIR would be loaded automatically for Camper website however the location for CLTC has not appeared. 
+
+Client requires this update by next week, they did not follow up as they were told it would be done automatically. ",value missing from related reference list
+331805,22h2 keeps failing,not enought disk space. deleted her oldprofile brenda.old and freed up 50gb. client will run it overnight.
+331802,issues with authenticator app number for austin to keep her app is not showing up,setup mfa again
+331752,so this morning when i'm trying to log into my city branch email so i can complete some trainings authenticated when i went to go press it it says it showed this number of fifty that should log into but as i logged into my authenticate appear when it saw any code even though it slogged in logs into the city we haven't emailed there,setup mfa again and this resolved issue
+331693,"TLMS is not working, client is a new employee, onboarded along with 3 other employees, and TLMS is working for the other employees, just not Athavi Jeyakumar. SucessFactors: Invalid Login
+
+Athavi.Jeyakumar@brampton.ca",Email had to be created
+331615,"Client's Usb C charger has stopped working, a replacement is needed
+
+New Equipment 
+USB-C Cable ",client received new charger
+331756,outlook not loading,recreate profile
+331484,laptop will not turn on i just get the black screen with a blue and great menu with a couple options,Laptop swapped out
+331753,"PM Scan not allowing user to login 
+User doesnt know her password
+Need password reset most likely",unlock user's account and reset password
+330496,switched over to a new phone so mf is not working it will not let me log in to teams or outlook,client confirm mfa is working
+331270,The client  started with the City 6 weeks ago and has not been able to access MeOnline. Keeps getting below error message.  ,"When his contract ended, his account did not lock.
+I had to lock the account and wait for the migration to happen"
+331749,not able to log in wiht temp password,reset password and client able to log in
+331858,camprine pdf piles files it gives me the document cannot be printed kindly use help page to troubleshoot,Needed to update Adobe in order to get it to print
+331414,"remove from exception adn add to mfa reg - 11:40 am
+advised client to try in 20mins and call back if issue with setup",intune shows he has been setup in mfa
+331360,hi i um i'm trying to register on the app on i think tls for my cash training but when i go to click on it it says that my login is invalid so i was just wondering how i can fix that because i need a register for my training and all the other applications for my account are working normally,Data not migrated yet (EDC not processed yet or tried on first day)
+331415,"Computer very slow, unable to use start search
+
+Windows settings keeps crashing, unable to repair O365 
+
+Outlook not opening or connecting to server
+Teams not connecting to server 
+
+Software center taking too long to ",Laptop swapped
+331582,"google authenticator up saying email doesn't exist even there
+
+MFA is set up properly and usable.
+Checked AD as well, client is out of exception group and in regular.","MFA is set up properly and usable.
+Checked AD as well, client is out of exception group and in regular."
+331676,"uh my sunsecutor app doesn't get sent the code and six stock and i loop my cat log in
+
+Re-required registration as client got new phone and phone number.
+Sent email with MFA instructions as well to outlook.",Re-required registration as client got new phone and phone number.
+331712,i can't log into my account when i sign in it says my password in is incorrect when it is in fact correct and i've changed it multiple times and it's still not working,Password Reset
+331724,me online log in not working even after password reset,The client was trying to login to MeOnline with his Login: Dmunro. Advised the client that he needs to login using his City Of Brampton email address
+331713,outlook on phone not syncing correctly only a few meetings are appearing ,"Settings > Calendar > Default Calendar > Calendar under COB Intune.
+
+May need to restart phone for sync.
+
+Advised client to double check if Outlook on desktop has multiple calendars. If so remove by submitting Service Request."
+331549,"Not able to log in to MeOnline after changing the password. All browser history cleared, removed saved password in Chrome password manager, tried accessing Meonline in Edge, still getting error message.",data issue
+331702,issue with 22h2 update not appearing in software center.,"Reboot device, more than one user was signed in. Update appeared after reboot."
+331618,"Please ask the user to try it from the webmail.
+
+I'm unable to update or cancel my own meeting which I set it up.
+
+Here is the error message.",used web
+331660,uh i'm unable to have one of my staff log into their t l m s uh it says we could not log you in if you can assist me in this,asked client to wait for access
+331633,thank you i've attempted to log in to mobile device i access to email and it's now appears that it's locked me out and the mfa will not generate another coat,The client has advised the MFA on his phone has been fixed on its own
+331677,"PR and MFA set up
+
+PR sent to supervisor
+mahesh.sood@brampton.ca","MFA set up properly by confirming on Microsoft Azure, Usable authentication method, and Checked that client is removed from MFA_User_Exception and added to MFA_Regular_Group"
+330714,"Hi, I have noticed a few things with my laptop
+its opens and randomly scrolls document
+it will jump on its own between systems as i am typing
+it also gets very hot and loud throughout the day",Laptop swapped
+331650,Jason Tamming and Kimberly Strok are expecting emails from Air Canada. The emails have been sent several times and nothing is showing up in their inbox.,email released
+331651,Bitlocker displaying on the screen,"Provided recovery key to the client.
+
+He is now able to login to the computer"
+331649,"client moved to south fletchers and has taken over the desk phone at that location
+please change name from rebecca on ext 63280 to his name Ryan",Changed name as requested on desk phone and voicemail. Voicemail was not reset as it has not been requested and there are unread messages in current mailbox.
+331644,look at some of it one of our summer students has had an issue with limited storage in his email he's unable to get emails or any kind of invitation he has a ticket in currently three three one four four eight but i hasn't heard back from anybody yet on the update i'm looking for an update or somebody who can assist as soon as possible,"advised client F3 license 2gb limit, if want more need e3 license"
+331612,Requesting Canon Advance print driver installed on her compiuter,Advance printer driver installed
+330810,Card Access not working on Monday Morning when I start at 6am. Should be 25/7 as we support the whole city in IT.,Changed access level to 24hr
+331606,Outlook not functioning  unable to see email that are current,Ran update for group policy.
+331602,good morning so when i schedulely meaning it's coming up with a diamond symbol and then the invites are getting a duplicate invitation so like i schedule a meeting for thursday and my director got five invites for the one meeting the lighted it once and now i'm getting a conflict error message pop up,works fine on web. recreated profile and this resolved issue
+327915,Need to print Trial notices from ICON Trial  TATG 1587 to printanywhere ,"Was waiting for the user feedback, contacted the supervisor. and process to completed this new request need business process change. So the business need to come back with plan how to proceed"
+331284,"Carina Scott was a co-op 
+
+Teams and outlook showing her old account (Carina.scott@brampton.ca)
+
+Her current account is Carina.a.scott@brampton.ca ",asked for offboarding ticket
+331205,"MS Teams
+
+Not able to accept shifts and swap shifts on teams
+
+Unable to offer shifts as well  ","Shifts REC profile is enabled, could be a device related issue. Please fully reboot the device/ system"
+331366,"When clocking in & clocking out Teams gets stuck on loading
+
+Unable to offer shifts, when user tries to offer shift it says you can only offer your shifts (User is trying to offer his shifts) ","Shifts REC profile is enabled, could be a device related issue. Please fully reboot the device/ system"
+331525,"whenever i try to use perfect mind i get error message at registration that says we're sorry the server encountered temporary error and could not complete your request the incoming request has too many parameters.
+
+See attached screenshot.
+
+Client reboot pc twice.",There was some server issue this morning that was resolved.
+331207,"Added client to BEU Shared Mailbox
+BEEN
+
+Adebisi, Temilola
+
+Added to Mboxgrp_BEU
+Added to Mboxgrp_BlackEconomicDevelopment
+
+On 2024/06/24
+Added client to BEU@brampton.ca
+Added client to BlackEconomicDevelopment@brampton.ca
+
+
+Need to add Adebisi's shared mailboxes to Outlook, gave instructions.","Added to Mboxgrp_BEU
+Added to Mboxgrp_BlackEconomicDevelopment
+
+On 2024/06/24
+Added client to BEU@brampton.ca
+Added client to BlackEconomicDevelopment@brampton.ca"
+331562,i broke my phone recently and authenticator app on there that was the only account so now when i try to log in to my city of rent and email the teams or anything i can't do it without getting the code but because that's only not working i can't accept the new my account,MFA setup on the clients cell phone
+331541,trying to log on to my laptop it will not log on to the network  so i tried repeated times to use password and old passwords to get on to the network and my laptop will not connect in the network when i plug it into a hard wire uh network cable nothing changed so that's it thanks,- had client hard wire laptop at another desk; when laptop was hard wired in at another desk client was able to login fine
+331552,yeah while log into my like city computer it says like login credential expire,DID PHONE PASSWORD RESET
+331461,"Is there an option to export Tree view ftom meonline
+
+Looking for a report that contains the section codes and need to know what dept/divn they are in
+
+E.g. need this code
+7010, FINANCE
+CLIENT SERVICES",Yaxin is created a 'service request' and closing 'incident'
+331199,"i am unable to access my account i have tried several software and platforms i've also tried different computers i'm downloaded the automatication up and still unable to do so
+6475543246 
+needs to do training for work
+cannot access tlms - sap error success factor
+please send client email when resolved",EDC needed to be keyed
+331302,i am unable to register some like i'm giving so it just says invilid login please contact your system administrator your account may be locked or inactive,Signed in using a different link
+331454,"Hi - noticed that a retired staff still appears to have a phone being billed as ""Suspension Plan""
+
+
+
+Service(s) assigned to: MALLY STROK
+
+Invoice
+Period: 6 -  2024, Phone Number: 4162545795, Rogers Wireless - Account:
+717852586, Total: CAD$ 5.65
+
+She is no longer with the City and device has been returned. Her successor had their own device and so Mally's account can be cancellel/closed.
+so wondering if they've temporarily held the account in case it was to be reassigned to her replacement -- confirming that won't be the case.
+",sent request to have line cancelled
+331533,Unable to login to teams and different apps. Keeps getting prompted to signin,"Revoked all sessions.
+
+The client is now able to login"
+,"Rental T470 laptop not powering on
+
+Rental Equipment 
+Old Equipment 
+Laptop T470 SN# PF0SB89B (Please return to Asset Dept.) 
+New Equipment 
+Laptop T480 SN# PF1EMRVD-----correct
+Also included a Laptop Bag, AC Adapter & Mouse -----correct
+
+
+Invalid Description Provided (AutoClosed)","Jun 4 -- client advised he has a T470; and has tried the pin hole reset but laptop is still not powering on; client also advised it is a loaner T470 as well; pls see below for SN; have spoken to Blair about ticket; as per Blair creating task for asset management 
+
+Jun 4 @ 11am- client advised he will get me the model and try the pin hole reset and will report back to me tomorrow 
+
+Jun 3 - called client back at 4165691472 but got voicemail; left vm for client to call me back; waiting 
+
+May 31 -- tried calling client at 14165691472 but got voicemail.
+
+laptop was refreshed. "
+321682,hi yes i took my docking station and charging cable to the service desk the charging cable isn't working different cable a new cable was tested on it and that worked so i'd like someone to have a look at a charge in cable,provided a replacement 135W power adapter
+321801,"Getting the message: "" Waiting to load profile do not turn off laptop",Client was able to login after laptop rebooted
+304016,"Client reported that they are unable to use the Scan to send function on the Canon printer, it is not working they are not recieving it at all since the machin eis installed.
+
+Loc# Riverstone
+
+s/n# 2cj03272
+
+Phone# 905-874-3536",- added email address; its working now;
+283194,"Panasonic toughtbook - 
+
+all wifi and cellular data is turned off; ",switch waas turned off; manual override and its working nowl
+111111,The receipts for A2G are lagging it taking some time before printing. Can we please look into this.,requested log files be archived to improve performance slowdown
+111111,"TAX PRINTER ISSUE
+
+Its currently printing a foggy grey line on the top of all the pages; -Needs this device serviced; 
+
+RICOH MP 6054BW1
+
+S/N: G196R340252
+
+Location:
+2 Wellington St. West - City Hall - 2nd floor
+Brampton, ON, L6Y4R2
+
+Contact Jennifer Anderson at 905.874.2205 or 416-272-9717",20 - Parts Replaced - Drum/Photoconductor Unit
+111111,Having issues connecting to Hotspot on toughbook,Mobile hotspot was turned on
+111111,"the second printer in the print room has a line thru the middle of the page too! can we have this printer serviced; 
+
+
+
+RICOH AFICIO MP C4503
+
+
+
+S/N: E176M262555
+
+
+
+Location:
+2 Wellington St. West - City Hall - 2nd floor
+Brampton, ON, L6Y4R2
+
+Contact Jennifer Anderson at 905.874.2205 or 416-272-9717
+
+
+
+",20 - Parts Replaced - Fusing Unit
+111111,my via one x agent isn't logging me in i keep getting a log in error every time i try,"restarted app, Checked settings, had client relogin and it worked"
+111111,hi there i'm trying to log into a laptop that is someone else's laptop and i'm having trouble is saying something about the domain,network cable plugged in and was able to log in
+111111,missing Teams on shared computer,updated from online version
+111111,lost MFA from phone,Removed from intune and stepped him through readding it.
+111111,"Setting up Liberty 
+
+User has not used liberty on this computer will need to apply the correct settings 
+
+Settings attached ","Applied liberty settings
+
+Screenshot attached, also located in POA Support Guide.pdf"
+111111,TEAMS App is not there after updating to Office 365,"checked remotely and the TEAMS Wide-Install was done, but the app was not there. The client was using web app. Downloaded the Desktop app from TEAMS Web App. Tested and worked OK."
+111111,ICON remote is not working,"opened command center and opened New ICON and worked OK. Made a desktop Icon for user. As for ICON credentials, advised him to reach out to his Team Lead"
+111111,"POS # 1
+
+Client came in and her tiny is not powering on.  
+I had client check the power cord to the unit and had her move the computer to power to another outlet that was working and still the unit will not.
+A site visit is needed, please bring a replacement unit
+
+S/N:  MJ061YY6
+
+Location 44 east borne drive (rec center)",visited the site and checked. The UPS fuse was tripped. Fixed the trip and the POS worked OK. Educated the users and the management regarding using UPS and how to reset UPS and NOT TO USE UPS FOR PERSONAL HEATERS.
+111111,"Teams: keeps kicking out of her meetings.
+
+Client already has M365.  updated Teams version.  Forced closed the app and went back in.  Client should be fine, but will monitor and advise if necessary.",updated Teams.
+111111,"Location: Sandalwood; Transit call center; client can be reached at x62602; pls assign to TS on the road 
+
+- client keeps getting invalid username or password when trying to log into COB10S-MJ08T0T2; client advised pc was setup before for an employee and has not been used for a while; but now they want to use the pc for new staff but is not able to login; 
+
+- client also advised desktop on another desk is not working; no network cables connected to desk phone","visited the site and the PC looked like it was off the domain even though it did not say that. Logged in as local admin and removed the PC from domain, but could not add the PC back to the domain."
+111111,Bitlocker popup not able to log in,was able to use the bitlocker tool to log him in
+111111,so i recently got hired for see my sports center and i i so appreciate me i have an account and i should recently pass for like a number of times i think six seven times and i mean is it locked out of the account or something but i i can't seem to reset the password so i can't start working out there they're going off robert market now so please give me a call back when you guys are open,Changed password
+111111,"Edge keeps crashing.
+IP address 72.33.88.175","Ran a repair on Edge which did not fix the issue. Reinstalled edge and once edge open. Cleared the browser history and reset settings.
+
+Edges is working now"
+111111,software center failing,"remoted over to the user and came to find out they werent wired into the network, and a ethernet cable was connected into their docking station.
+
+Since the ethernet cable was not working, I went over to their desk and switched the port. Once the ethernet cable provided network connection, software center started working normally."
+111111,"uh when i connect to the
+
+
+647-293-9713
+
+Remote, cannot Connect to into VPN
+City Laptop
+Bell
+Phone and Personal PC is good connection on personal computer
+
+10:30AM, before VPN was working fine
+
+VPN infinite loading
+Disconnected and reconnected internet router, restarted laptop, correct VPN URL
+Client connected directly to router, 
+after restarting computer, 47.3 MBPS Download, Upload 7.58 
+Connected, to VPN after connecting directly to router downstairs, 
+after wards speed 30.46 mbps download, upload 7.61 mbps
+Laptop T490","Client connected directly to router,
+after restarting computer, 47.3 MBPS Download, Upload 7.58
+Connected, to VPN after connecting directly to router downstairs,
+Afterwards speed 30.46 mbps download, upload 7.61 mbps"
+111111,"MFA Issue on Personal device, originally too many sign in attempts, therefore, closed all  applications, then tried to open a new chrome session, client was able to get into applications by entering code from browser onto cellphone.","MFA Issue on Personal device, originally too many sign in attempts, therefore, closed all applications, then tried to open a new chrome session, client was able to get into applications by entering code from browser onto cellphone."
+111111,"have a pc that is also connected to my mac i usually have to change my pc password which i just got finished doing it will transfer over to my macintosh at this point in time my macintosh won't receive the new password and i condon don't know what to do my pc's working just fine but i can't get into my mac my macbook so that's it
+
+PC and Mac, changed password on PC, show up on Mac, able to login with Macbook with original password, Macbook is corporate
+
+Connect macbook to ethernet, working in person
+
+Restarting Macbook and being connected to the docking station (direct internet connection resolved the issue)
+",Restarting Macbook and being connected to the docking station (direct internet connection resolved the issue)
+111111,"
+
+get the following error message when accessing secondary mailbox cannot display the folder microsoft cannot access the specified folder location 
+also add another owner carolyn.crozier@brampton.ca.","Jan 16 -- have called client back and have walked client through on how to add new members to the two mailboxes (MBoxgrp_rfeoi and MBoxgrp_Citylands) using manage groups; client is the current owner of those 2 mailboxes 
+- client then advised he is changing roles and requested that his name be removed as the owner and replace it with Carolyn Crozier; walked through requesting mailbox ownership transfer using the mailbox form through self service "
+111111,"Getting the message: "" Waiting to load profile do not turn off laptop",Client was able to login after laptop rebooted
+111111,hi yes i took my docking station and charging cable to the service desk the charging cable isn't working different cable a new cable was tested on it and that worked so i'd like someone to have a look at a charge in cable,provided a replacement 135W power adapter
+111111,"my microsoft teams and outlook is not working and i'm unable to log in for my shifts and also be able to see messages on any of my personal devices but when i go to the facility then i can see it on those devices
+
+
+removed from exception 8:35AM but wanted to set up at home, apple id wasn't working? gave instructions
+
+mfa still not set up
+
+mfa set up on azure was already fixed on ad","MFA set up properly by confirming on Microsoft Azure, Usable authentication method, and Checked that client is removed from MFA_User_Exception and added to MFA_Regular_Group"
+,"I am using my laptop login credentials to access meonline, however i keep getting an error message saying invalid credentials.",root cause is EDC was not keyed.
+,I added our general email to my outlook account and now the app won't open at all,"Mailbox that client added was done incorrectly.
+Removed mailbox and showed client how to add it"
+,Amanda is extremely slow when loading anything...waiting minutes at times,cpu usage issue
+,Calls are not recording for a CSA at Service Brampton,Station missing from WFO
+,"All three pinpads at Cassie Campbell, front desk pinpad 1-3, all of a sudden the moneris terminals stopped working, we have restarted and the keypads still will not initialize.
+
+Pinpads have been down since Wednesday at 5:00pm",I packaged and deployed the PaymentTerminalService v1.5.41 bundle to the App_PerfectMind group
+,"Cannot login ICON TATGB501 currently in use
+
+in bomgar i have no access to the new icon server - does not show up - so i cannot end the session",ICON remain connected. Stop the connection on the TATG
+,"Printer looks to have over 300 jobs in que and won't print anything
+
+dec 14 -- SN of printer 3XM02409 
+",had client turn off then turn on printer
+,Can't open SharePoint files on M365 Desktop app,Issue resolved with re-naming fil
+,I would like to add a slido add on to my teams application. I attempted it a few times and it is not working.,Slido add-on on Teams is currently not supported by our organization.
+,Cannot sign into MeOnline.  Getting message below. Client has never been able to access MeOnline.,"The reason she cannot access MeOnline is because her PeopleSoft User profile is incomplete.
+Completed User profile and given MeOnline access."
+,Hi I have a team of 7 part timers. They do not have access to a City of Brampton laptop. Is there anything that can be installed on their personal computer that would allow them to print to City of Brampton computers from their personal laptop?,email client to let him know that's not service we provide.
+,Unable to log in printer. Have followed the video to log in and still unable to do so.,Provide client with SAM account. Client is now able to login to printer
+,"Client reported that they are unable to use the Scan to send function on the Canon printer, it is not working they are not recieving it at all since the machin eis installed.
+
+Loc# Riverstone
+
+s/n# 2cj03272
+
+Phone# 905-874-3536",- added email address; its working now;
+,never set up my voicemail - asking for password but I don't know it,never set up my voicemail - asking for password but I don't know it
+,Can't login to MeOnline. I get Authorization Error -- Contact your Security Administrator,Employee has been made Active.
+,My PM Scan is not working. It says my username is not found.,PM Scan Password Reset
+,the harmonie sidebar is asking me to purchase a license...and i'm getting an error message about scripts not running.,copied the Harmon.ie file to users profile under C drive and it is working fine.
+,"Hi there, I was trying to fix my printer settings, but accidentally removed the printer from my list, and cannot find the printer to readd back.",ran gpudpdate /force to bring back the printer
+,Amanda not loading/signing me in - i am remote at home but it was just working,"tried different methods to resolve the issue e.g
+- logging out of amanda and logging back in
+- shutdown/restart computer
+- clear cache"
+,"I am having difficulty logging into my TLMS to do some training material. It keeps prompting me to sign in and when I do, it keeps coming back to the log in page. Please advise.",Issue with the vendor
+,I am a returning crossing guard.  I can't access Meonline to see my payroll info,Client is going to reset meonline password himself.
+,I was able to sign into my pm scan this morning but i cannot now. It tells me 'user not found' even though i am using the correct information,PerfectMind Log History shows Toni is able to successfully log into PM on Nov 7 - closing ticket
+,"My computer sometimes is glitching throughout the day. For example, while using Word, my computer will atomically add lines and tabs to my document without me pressing any buttons.",Client has turned off Narrator. No glitches after narrator have been turned off
+,A2G login is not working,"Client needs to restart computer and let the A2G sync for further instructions on how to use A2G contact supervisor,"
+,I am trying to create a new flexible analysis template on Peoplesoft but I get an SQL error,User was able to get the information after security was updated.
+,I need my MeOnline password reset.,unlocked client's account in AD
+,I am unable to access my brampton accounts on iphone,competed configuration of the authenticator and reentered AD pwd
+,CAMS case processor is stuck and on one screen and not processing anything for daily interface.,Reboot fixed the issue.
+,need to support making transcription,have advised client she will need to put in request to have non approved software be installed on city computer
+,Virus alerts popping up on my screen,google chrome browser pop up - remove the notifications and blocked other site notifications
+,I can't access any orientation modules for my onboard training as a new employee,client supervisor will reach out to HR.
+,"I uninstalled and reinstalled Harmon.ie b/c it suddenly said that I no longer have a licence, even though I was having no issues before.",provided a copy of my license and reconfigured the my harmonie with her sharepoint site
+,"Jobs sent to the printer are not printing. After logging into the printer and selecting Print All, the printer flashes a message that it is processing but nothing is actually printed.",rebooted server
+,Forgot passcode and password on my Iphone .. now I am locked out,Unlocked iphone
+,Unable to log into any websites using Brampton.ca,it was a password issue
+,(in Transit) are unable to use the PeopleSoft HCM-CI tool,Requested Lorrie to create RFA tickets for Melissa and Amanda.
+,issue with outlook; working from home ,advised client to connect to vpn first
+,advised client that he can only connect with public wifi on corp phone,advised client that he can only connect with public wifi on corp phone
+,"Hello My login keeps failing
+
+Update:
+My login works on city computer, teams and outlook. However, when I try to login onto perfect minds and PM scan it says login failed. ",PM Logs show no issues with login - client has not replied to email in ticket - closing ticket
+,All of our Bentley License are not connecting. Please help ASAP. Thanks,online cloud login issue
+,I used to be the owner who created the email group of Organizational Performance & Strategy and now is not working.  Has anyone taken over from me? Please advise.,need to connect to vpn to access manage groups
+,Unable to print/printer queue paused,"windows update patches effecting printing;
+confirmed with user and its working now;"
+,"I have tried updating windows after I got an email from IT my laptop had the old version. I tried 3 times, but it failed.
+
+- client advised she was in office today; had client hard wire laptop to network 
+- laptop only had 23GB of free space; emptied sccmcache folder to free up enough space required for update; advised client to leave laptop hardwired for update ",updated fine after space was created.
+,"when trying to open visio or any visio documents, the message Account Issue pops up with error code: 0x8004005.  please assign to Jana.  she needs to re-assign me the license.  Thanks",submitted an SR for Visio
+,Change out of office message for shared mailbox,Showed Mildith how to update Online.
+,"I am using my laptop login credentials to access meonline, however i keep getting an error message saying invalid credentials.
+
+ ",root cause is EDC was not keyed.
+,I've installed Avaya One-X Agent and am getting a shortcut error message,installed avaya one x
+,FCCC- unable to print from laptop to Ricoh printers,Windows Patch caused the issue with printing.
+,"Panasonic toughtbook - 
+
+all wifi and cellular data is turned off; ",switch waas turned off; manual override and its working nowl
+,"When I add a new event in my calender on my iphone, it does reflect on Outlook on my laptop",Needed to set defaults to cob intune oauth in calendar settings
+,voicemail inbox locked due to incorrect password entry.,reset vm password for client as requested
+,My ID card is not activating the HR printers. My log-in isn't working on the printer to give me access.,Requested client to submit a Access card request
+,"The bottom of my laptop screen appears to be malfunctioning (bottom to date area of taskbar) – not hindering ability to work, but am concerned that it may eventually impact the entire screen. Not sure if it can be repaired or needs to be examined.","client sent me video and looks like lower bottom half screen flickering with a white line across it - maybe video cable issue, external monitors shows fine only occurs on laptop screen. - its most likely laptop hardware issue"
+,keyboard and mouse connection lost of the PC here in the office,no power to the docking station
+,"Hi there, community request  forms that are being submitted through the protocol website are not coming into the inbox or through the portal.
+
+brampton.ca/EN/City-Hall/Protocol-Office/Pages/Welcome.aspx",Seems like there was an unreported service interruption between MS Forms and Power Automate which has since then been fixed.
+,the second monitor is not connecting with my computer dock,"Had client disconnect laptop from docking station.
+Wait 30 seconds and then reconnect laptop.
+Client is fine now"
+,I am trying to log into Office but it wont let me.,installed the Base o356.
+,PM scan not logging in for staff but Perfect mind works,Serena will have the user reboot the computer before the shift and they will call in next time while the user is having the problem in front of the computer.
+,issues with iphone update & Password issue ,Passcode removed and Password reset
+,"I've just received a new phone and there is an issue with the mic. When I make calls, there is static and it sounds like I'm far away. The mic is not covered and I've tested with multiple people, calls, and Teams, it's always the same
+",Device was replaced by Rogers
+,please advise how to get access to the Banking and Investment folder on Sharepoint remotely,Pointed user to the owners of the sharepoint site in question to get access
+,i recently changed pwd for sharepoint. it doesnt work for self service. please help. thanks,"nable to get in contact with client. emailed client informing that the issue is the length of windows password. required client to change password using Minimum password requirements is 12 characters ( combination of alpha, numeric and characters)"
+,"iPF825 plotter driver required on my laptop to print full size engineering drawings.  Plotter is located at WPOC building 2, 2nd floor",installed plotter for client
+,I updated my laptop and to complete the update I am getting a message from citrix secure access asking to provide a company provided server URL,"client was trying to use netscaler while in the office.
+The update is progressing just fine without citrix.
+
+Explained that it is just to be used when outside the organization"
+,"Hi - I sent out an email invite for COA in the city clerks calendar, but the invite updates are going into the deleted inbox",This is normal functionality of outlook. Explained to Kiran. Oulook only send emails when the date or time has been updated.
+,Outlook app not opening. Have to restart several times a day,rebuild ost profile to resolve issue.
+,"I am receiving data from MPAC and it's too large to email. I created a Onedrive folder and successfully shared it with the external person, they said they dropped the excel spreadsheet in there but i dont see it. Is there a size limit?",It just takes a while. Loaded up after a minute
+,teams access for my staff need shifts access for my staff,created two tickets for the users. Advised the client that this ticket will be closed
+,Computer is not letting me unmute or change sound settings," speaker settings were disabled
+- enabled speaker settings and working now"
+,When initializing first time use on new printers my access id/password are not recognized,walked the user through setting up badgeID printing  - user will test when office Monday
+,"AMANDA not working.  Unable to access SSO. nothing loads. Just keeps spinning
+Tried logging in as well an no luck.","tried different methods, restarting computer, amanda, and router."
+,"Voicemail Unavailable, try again later' voicemail iphone issue","Reset password for iphone voicemail, any other issues need to be handled by Rogers."
+,"I am having difficulty logging into my TLMS to do some training material. It keeps prompting me to sign in and when I do, it keeps coming back to the log in page. Please advise.",Issue was with vendor.
+,Avaya One X-Agent on my computer isnt working. I tried to restart my computer which helped but then the problem happened again and disconnected me and not allowing me to reconnect,Requested client to connect using network cable.
+,unable to open excel file that is published on group sharepoint connected to onedrive sync issue,"Had client sign out of Excel and restart her computer.
+
+She is now able to access file on OneDrive"
+,"I am having issues submitting external file through WINSCP
+can't send CAMS report to collection agency",Seems to have resolved itself. Could have been a network issue as she was working from home.
+,"Last week my computer had to be reset by IT and I lost one of my applications in the process that I use regularly called Kofax PDF. Also, I am using a personal computer.",walked client through isntalling kofax through software center
+,Accela will not load up in either Chrome or Explorer,"Remote into client's pc and cleared browser data from all time.
+Client is now access Accela"
+,"I changed by password using Citrix Secure Access, but my log in password didn't change. I am unable to  Restore Network Drives because of mismatch of passwords.","client meant that the windows login was not changing not the AD pwd.
+Explained that pwd change from home is a 2 step process.
+Client is fine"
+,Not accepting my password and it says checking your organization's data access requirements for this app.,"removed account from teams;
+readded teams account and its working now;"
+,"Messages are not sending. They are stuck in the outbox since Monday, when I started as new employee. I require immediately in order to perform my job. Thanks","In Outlook > Options > Advanced, 'send immediately when connected' checkbox was not checked."
+,unable to install programs and access City works,Snagit installation and cityworks login both successful after connection to vpn.
+,Teams app on mobile stop working please help,"teams works on desktop computer at work, app on her personal phone not working - advised to uninstall and reinstall the app on personal phone."
+,My colleague (Erin Glover) requested that I have access to the 'Public Art' email. She was told that I was added yesterday and instead of having access to public.art@brampton.ca I was put into the 'Public Art Group' which allows me to share files with my peers. Can you help me get access to the public.art@bramtpon.ca email please?,User have access. Shared the steps to add the mailbox.
+,received a message that my iphone has bee infected with viruses,"User received virus alerts from a website. Advised user to close tab and browser and not click any links.
+
+Also advised user that Absolute Secure Access app is safe to update as it is connected to netmotion."
+,"SP Server Service would not start automatically.  Cleaned up registry of old SP server services and created a new one using SC command.
+
+Database service was removed in error.  See IBM ticket at IBM support TS009774007",Very complex and old software. Issue resolved by IBM ticket: TS009774007
+,I am receiving the EDC report from HR daily but I cannot access the report as it says I do not have authorization,User do not have COB RT Report Inquire role on his user profile in meonline and after giving this role the issue is fixed. We have received confirmation from user on teams.
+,I want to download Power BI desktop for work purposes but I need admin username and password,Informed the client that Power BI bundle is available so he needs to put in a request for that .
+,Teams go off line intermittently. Internet connection is ok. Everything else is working fine. Rebooted the laptop two times. Problem still exist., reinstalled ms teams
+,TXM account locked,All users locked out intentionally as of this morning due to Nightly Batch Issue. Resent e-mail to this user.
+,I am unable to play video meeting recordings on my system. It gives the error as Server Execution failed, as client was opening the video file from one drive advised client if she has issues again to copy the file locally to her computer first before opening; have also advised client about vlc player instead of using windows media player 
+,I have virus popups continuously appearing.,Client has change her password. No more pop ups appearing
+,On Teams Calls I can not activate the camera ... it does not work,client had the webcam cover / shutter covering the webcam; advised client to slide the cover over so that it is not covering the webcam
+,"Hi, I'm working from home today. All connections are the same as usual. The only thing different is when I tried to connect VPN, it asked me to change my password. After I connected VPN I don't see G: drive showing up. When this happened before, I double click Restore Network Drives, it would fix it. This time it didn't help. I tried restarting my laptop multiple times too. Please help. Thank you.",walked client through doing a password sync
+,Cannot clear or submit items in IT service cart,help client clear cart for ticket submission.
+,Renew and re-add Harmon.ie in my outlook folder,updated license file
+,I cannot access G drive on VPN.,On your desktop please look for an icon called Restore Network drives. You will need to keep on double clicking on it until your G: \ drive gets mapped. 
+,"Hi, I was recently granted access to HRMS. I am unable to pull up an employee's file but my colleague Rajnoop Cheema was able to retrieve the same file. Please advise. Thank you,
+
+no results display when he runs the search",RFA had wrong DP list. Submitted another ticket with correct RFA.
+,"I am having issue with mobile and computer syncing for One Drive application. Might be because of the name change process. currently, in my computer one drive storage path is C:USERS:PiPatel. But it should be VePatel after the name change so the phone isn't syncing together with the path on the computer.",uninstalled and reinstalled one drive on his phone and it is updated now
+,All my tickets for application downloads are coming back to my email saying i forgot to submit when i already did,Advised user to check out their cart after submitting tickets.
+,"Changed password on Monday, had trouble connecting to server, I.T. assisted in connecting... since then not able to read older email (not connecting to server), or select email recipients in PeopleSoft Financials",recreated the Outlook profile and tested Ok.
+,"Phone does not notify of Voicemail Messages, and others in the office their light does not turn off when no messages.",Digit conversion for outgoing calls from SM
+,"Need to update drivers for monitors , as I am encountering issue with second monitor not being able to work","Home monitor isn't working
+Ran updates - didn't work 
+Tried pin reset at bottom didn't work
+power brick is warm
+tested docking station and charger works - unfortunately the issue is with the personal monitor. "
+,the accela program wont allow me to log in. when i open the program it just spins and the screen to log in my credentials doesnt show up,Please clear your browser History to resolve the issue.
+,Receiving error message when attempting to login to cityworks and SharePoint for user ghorton.,gave client site link and he was able to log in
+,Security Alert - outlook office 365 certificate revoked,Issue was from MS end and fixed during the weekend.
+,The VGA connection is not working on the docking station.,replaced dock resolved issue
+,"ICON TN3270E Service message 524, The PU is inactive for LU TATGE135. You may continue to wait or terminate your session Error message appears on my ICON screen.",provincial outage
+,"I accidentally put the number 1 in the keyword search under the registration browser, and because of that my registration has been continuously loading. I have cleared my history and it is still loading.",recommended reboot
+,I cannot access the EDC report but I hve been getting the daily email from HR,User do not have COB RT Report Inquire role on his user profile in meonline and after giving this role the issue is fixed. We have received confirmation from user on teams.
+,I am not able to send emails - they are stuck in my outbox,open/closed outlook seems to have sent emails now. 
+,Sometimes invites do not show up in other people's inboxes,"Somehow the meeting request had a glitch when it was sent.
+Advise client to send out a meeting update.
+
+Once meeting update was sent she received meeting notifications"
+,"MAG zip file is not downloading and allowing me to save to a new location. This is a zip file that I am trying to download, rename and save to OneDrive but i keep getting an error message: Windows cannot complete the extraction. The destination file could not be created.","extracted using 7zip, asked for password, file extracted"
+,The cash drawer at POS1 at the Bramalea Terminal is not opening after transactions are processed.,The cable was plugged into the wrong port on the printer
+,hi i can i'm not able to um get access to my laptop it won't accept my password it says the account is inactivate can you please help thank you,account locked
+,"i called in the other day regarding outlook duplicating my calendar invites a new profile was created and that temporarily solved the issue but it started happening again this morning
+
+outlook calendar diamond icon and duplicate invites sent",used web version
+,We have 3 portable radios that are not working on Channel 2 and require programmed as soon as possible as they are required for Summer Camps.,"Two Kenwood TK3302 and One Kenwood TK3402 radios re-programmed and delivered on July 03, 2024."
+,"a meeting invitation in the outlook calendar has multified numerous times and i don't know how to resolve it.
+
+Outlook, meeting invite in time slot showing up 20 slots, in one time slot, meeting invite showing up multiplied itself and numerous times, 20 more, 24 times. 
+
+Accept one change or all changes, all changes, so it was a synchronizing issue. Reporting outlook calendar issues.
+
+Created new meeting at 10:01AM, then deleted the original 10:00AM that were duplicated 24 times. All 24 were deleted, expect new one.","Created new meeting at 10:01AM, then deleted the original 10:00 AM that were duplicated 24 times. All 24 were deleted, expect new one."
+,Unable to log into ICON - The session has been terminated,reset
+,"Access to printing
+
+client tried username BSrithar but still get authentication failed. tried withouth tapping card and same message
+i had her change her password and try again on  the printer and same message authentication failed",Gave client instructions for printer
+,"trying to print worksheets, but cannot find printer",User solved the issue with assistance from their programmer.
+,i'm unable to access the i t service desk um it just gives me access denied when i try to access it um i'm also unable to access any of the iveal point work for forms um including like the employee data change um i'm able to access it but i'm not able to access my previous time,"client has his name change and login with new account - gets message access denied when opening ISM self serve. he is able to access all other network with new login fine(email, sharepoint etc)
+his new acct aj.sousa@brampton.ca"
+,when I open my calendar the blue button with the Teams option is missing,"Updates disabled add-ins for teams
+
+https://learn.microsoft.com/en-us/microsoftteams/troubleshoot/meetings/resolve-teams-meeting-add-in-issues
+
+File > options > add ins
+
+reenable teams"
+,The client would like some assistance login into printer,Provided the client with her SAM login
+,"attempted install of build image update at Fire Officers' desk at JFCC.
+Update failed (one attempt only)",i installed 22H2 on the docking station. i had ran all actions and also did a gpupdate. i cleared cashes and also cleared deleted some files out of the C drive
+,"Receipt printer not printing when pressing print receipt. No paper is being dispensed either. Checked for Jams, old rolls, ect.",USB Cable come unplugged from the back of the printer
+,"HP printer not printing.
+IT tech was on site, connected printer and is working however printer is not printing jobs out.
+
+It does print the report to say the printer is working.
+
+Need this issue fixed as soon as possible
+Please",Had to install the Full Printer Suite not just the driver
+,"i currently i recently got a new phone and the offent the hitter up won't let me log into my teams or my email on my phone
+
+On Authenticator, asks for code.
+Client got new phone, re-required registration
+","MFA set up properly by confirming on Microsoft Azure, Usable authentication method, and Checked that client is removed from MFA_User_Exception and added to MFA_Regular_Group"
+,customer service representative at century gardens is unable to log in to pm scan due to no password being accepted,set up new password
+,"i am unable to relock time entry after making corrections
+
+i do need to go back in and have payroll unlock so that i can fix it doesnt let me relock myself",The System has been locked.
+,"Client got landline phone set up with extension. The only issue is the phone doesn't ring when it is directed to the pro shop. Client, Matt Steane, takes calls from them in the supervisor office when the pro shop is busy.
+
+Client would like phone extension from Peel Village Pro to ring in the supervisor's office additionally. 
+Client/supervisor's extension is 18002, the Peel Village Pro Shop's extension is 42998",add pro shop line to users phone.
+,Audio is not coming through on my laptop.,Swap Speakers
+,"Client requested a folder on teams sharepoint page
+
+Sharepoint page:
+https://bramptonca.sharepoint.com/sites/CPT00184/Policies/Forms/AllItems.aspx
+
+Client required to fill out Service Request from Self Service, Service Catalog called:
+Sharepoint/Website
+
+and select Request Type: New Sharepoint Folder","Client required to fill out Service Request from Self Service, Service Catalog called:
+Sharepoint/Website
+
+and select Request Type: New Sharepoint Folder"
+,"My new foreperson, Dave Sansford has no IT profile, email, or desktop phone",advise to submit onboarding rfa
+,Need to replace desk phone headset.  Current one is a wired plantronics earpiece.  Thank you.,Told to make service request ticket for it
+,there is 2 adobe updates that have failed to install. I've tried several times.,update is not available from software center.
+,New city laptop has an error when I try to login on outlook,"Client used shared computer and advised client to use Outlook web, which worked out for client."
+,"They do not appear to have a Canon ID. When they put in their passwords and email, it does not work. They also tried their computer usernames, but to no avail. ",Instructed user on how to setup card for printer
+,"Hi, I am unable to download Power BI from the software centre as the download simply fails. I tried downloading under Brampton Corporate Wifi and No VPN was used,",EUC manually installed Power BI
+,Not able to add MS Teams meeting directly in outlook,"Repaired teams add on through Add or Remove Programs, modify and repair teams add on"
+,Inactive user needs to be updated in groups User is still an active employee but the account is set to inactive. All AD groups are missing for the user ,Informed user a computer account RFA will need to be submitted
+,"When trying to install and run ArcGIS, every the program was crashing and failing every time I tried to do anything. I was recommended to uninstall it, and when I did that, it uninstalled on my computer, but the software center still thinks I have it and won't let me redownload it.",reinstall the applicaiton at software center
+,Need to install SQL Server Mgt. Studio in my laptop for testing in CSG S/W Replacement Project,advised client to submit software rfa
+,I am getting a msg for incorrect username/password but the password is working everywhere else and I haven't changed it,Browser cache and history cleared
+,Teams Links are not being Added to Meeting Invites automatically.,Disabled Teams Addin in outlook
+,"at home, monitor and laptop were working fine. then it glitched, and i thought the monitor broke. Come into work today and connect to docking station and monitors won't work",ran lenovo updates and reboot and screens seem to be working now
+,"After of week of not using Authenticator on my mobile device, now I can't log into my iOS device on web browser or CityWorks.  Message I am getting is: Your sign-in was successful but does not meet the criteria to access this resource...  Please provide me with steps to fix this issues",MFA Enrolled
+,mouse and key board dont work when plugged into the docking station,Lenovo Updates ran. The wired mouse and Keyboard are now connected
+,Unable to add teams meeting link to my calendar invites,"Repaired Add-on for teams, similar to previous ticket. Switched teams to new version. Client is able to add teams meeting links to calendar invite."
+,I do not have access to the TLMS or the folders on the G drive even though my manager gave me access,"Client has access to G:Drive, restore network drives and client was on corporate network already. EDC not keyed"
+,issue with laptop trackpad not showing mouse.,"ran lenovo updates- none appear to be for the mouse pad, but will run it anyway.  Client advises that this has been an issue since she got it about a month ago.  She has a habit of travelling from and to work with the laptop turn on.  She travels half an hour.  Advised to have it shut down if it is going to be in a bag of any sort.  She will take it out of the bag when she gets to the car so it does not over heat the circuits.
+Rebooted and it appears to be working again.  "
+,"I have an issue in my outlook, not able to open emails.","restarted pc, and computer was able to connect to the server"
+,I cannot access my city Microsoft account on my android phone. The message pops up saying Annette.Ali@brampton.ca does not exist,"User was on Andriod
+
+Cleared Teams data through andriod settings app"
+,MY ID card does not print at all. when i tap it tells me to put in username and password and when i do that it says authentication failed,told client first time setup instructions
+,"I was using the new Teams, all of sudden the keyboard stopped working and the computer automatically deleted my emails - I am not sure what happened, had to force to turn off the laptop as restarting didn't work. I am not sure what happened but want to be careful before I open my outlook or any other work on this laptop",reboot seems ok and also ran scan on system ok and also ran lenovo updates
+,I can not access city works. My username and password is correct but it wont let me log in. I'm not sure the problem,MFA setup - complete
+,im not receiving emails,Created a new mail profile for the client. She is now able to see new emails now
+,My monitor doesn't connect to my laptop but connect to my personal laptop. It seems something is wrong with my laptop as it happened like 4pm and it was ok before.,Ran lenovo updates
+,"Hey IT, my PMscan password got reset but I have no idea what it has been reset to",account reset through smart client
+,I am unable to offer or swap shifts on teams. It keeps saying you can only send offer or swap requests for your shifts.,Issue has been resolved at Microsoft end. Please check and let us know if issues re-occur.
+,When trying to open a PowerPoint it says The location may be unsafe,Change file permission option unblock
+,one drive access issues fixed few days ago and happened again. please advise how I can do it whenever it happens again.,showed client how to lauch one drive app if it is not running
+,I got my docusign account activated but i wanted access to generate letter from docusign and not to just sign.,Elevated access provided upon receiving approval
+,I setup MFA but still cant login to my account outside of work,removed from exception group
+,"print jobs not in queue
+
+Documents I printed this morning are not there when I tap onto printer - Screenshot attached for my queue 
+",installed advanced drivers for the user
+,My email isn't working to log in to meOnline,"User has cleared cache 
+Account is not disabled on AD or meonline"
+,"Staff unable to access TLMS or MeOnline
+
+Staff member is a new employee as well.",Name spelt wrong in IAS
+,I haven't been able to connect to the corporate wifi for the past few days. I've been using the public network,Needed to switch to corp wifi and forget public
+,Client email is not being received Please unblock this email ,E-mails released and the details provided
+,I am currently receiving voicemails to my email inbox that are for Sharon Caruana.  Wondering how to go about fixing this.,removed email from the voicemail using the avaya portal
+,Unable to access Telestaff Roster,Application restart addressed issue
+,"When I am using Visio (daily basis) once Visio has been opened for an hour or so, or I change screens, half of the document isn't loading, or all I am seeing is an outline of my document, not the full details of visio",Ran disk cleanup and repaired Office Apps
+,I have been added to the new mailbox but still do not see it in my outlook,Add mailbox group
+,Microsoft office (email) not opening.,ran gpupdate /force; then had client sign out and sign back into Teams
+,Unable to log into Peoplesoft or BPM - no error messages appearing. Password and username are correct.,password expired
+,"New MFA app is installed and set up on my personal device, however I still cannot access my emails.",moved to group
+,I have MFA setup on my old phone but now i got new one. how can i transfer it to new one,MFA reset
+,"My laptop has no volume to it; I can't hear anyone in teams, notifications or through Avaya",ran lenovo driver update
+,My username and password aren't working to log in to Archibus.,profile udpated
+,"Netscaler vpn was working yesterday,  after update, was not working, but able to connect through vpn.brampton.ca link, able to do run all actions and gpupdate/force and trying to reinstall vpn
+
+
+Running system updates and ran gpupdate/force and run all actions will call back once updates done and reboot computer will reinstall vpn
+
+I couldn't login the VPN
+
+
+Connection appears to be correct
+Version is correct 
+
+was working before update ","After thoroughly checking logs deleted Agge folder from user profile, which fixed the issue"
+,I am unable to sync the TMP 2022 and Transportation Planning Sharepoint sites with my OneDrive.,Synced through sharepoint and uploaded to City of Brampton Onedrive
+,I thought I have installed MFA on my cell and laptop but it looks like I did not do it correctly.,mfa setup completed
+,"Sign in on phone indicates successul MFA but does not meet criteria to access resource. Phone cannot be used outside of COB office, MFA on phone and in use.",Removed from Exception list and added to Regular User group.
+,when I'm on the road I cannot reach the www1.brampton.ca webpage to access work related materials. Same link works while I'm in the office.,"The client's browser cache was reset, and the incident has been resolved."
+,I keep getting notifications that there is a virus on my laptop,Cleared edge cache and history - Ran Defender and MS safety scan
+,"Hi, I can't access my meonline. It tells me to contact my system administrator
+Authorization Error -- Contact your Security Administrator",EDC not keyed yet.
+,I have been given access to Capital timesheets but cannot login. When I try logging in using my brampton email as my Username it tells me invalid username or password,reset password
