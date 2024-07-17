@@ -2,6 +2,5 @@ streamlit
 openai
 joblib
 pandas
-re
 nltk
 scikit-learn
