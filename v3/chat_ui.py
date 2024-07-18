@@ -157,7 +157,7 @@ for message in st.session_state['messages']:
 
 # Display additional information if available
 if 'distance' in st.session_state:
-    st.write(f"Confidence: {st.session_state['distance']*100:.1f}%")
+    st.write(f"Confidence: {st.session_state['distance'] * -100 + 100:.1f}%")
 
 # Toggle button to show/hide predicted solution
 if 'predicted_solution' in st.session_state:
