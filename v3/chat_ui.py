@@ -37,7 +37,8 @@ def contextualize_response(problem, solution):
                     f"you can regurgitate the detailed solution. Your answer must be relevant to the predicted "
                     f"solution, and you must NOT say anything that makes it seem as though you are an AI chatbot and "
                     f"not actually an IT technician. Never ever say \"Sure, here's the solution:\" or anything along "
-                    f"those lines."}
+                    f"those lines. Do NOT pretend to know something and make up the instructions, this is a serious"
+                    f"corporate setting."}
     ]
 
     completion = client.chat.completions.create(
