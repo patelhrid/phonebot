@@ -16,17 +16,19 @@ client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 DISTANCE_THRESHOLD = 0.7
 
 # Define a function to contextualize the output using LM Studio
-def contextualize_response(problem, solution):
+def contextualize_response(problem, solutions):
+    labeled_solutions = "\n".join([f"Solution {i+1}: {sol}" for i, sol in enumerate(solutions)])
     history = [
         {"role": "system",
          "content": "You are an intelligent assistant. You always provide well-reasoned answers that are both correct "
                     "and helpful."},
         {"role": "user",
-         "content": f"The problem is: '{problem}' The predicted solutions are: '{solution}'. Please combine, aggregate "
+         "content": f"The problem is: '{problem}' The predicted solutions are:\n{labeled_solutions}. Please combine, aggregate "
                     f"and average the predicted solutions, and explain it to the user in a well-structured sentence. "
                     f"Don't mention 'the solution', because I do not know what that even is, and instead talk about it "
-                    f"like it's your own. Your response must be instructional to an IT Support agent, and you should be"
-                    f" telling me what to do. The solution belongs to you, so instruct me on the solution like I've "
+                    f"like it's your own. Your response must be helpful to an IT Support agent, and you should be"
+                    f" telling me what to do, but never say anything with 100% certainty. The solution belongs to "
+                    f"you, so instruct me on the solution like I've"
                     f"never heard about it before. You are to respond as if you are the only one providing knowledge, "
                     f"because you are the front facing part of the flow. So don't say \"Sure here's the solution\" or "
                     f"something like that. You ARE an AI chatbot trained to help IT technicians, so you can be honest "
@@ -76,9 +78,8 @@ def handle_problem(problem_description):
         closest_solutions.append(solution)
 
     # Aggregate the 3 closest solutions into a single response
-    combined_solution = " ".join(closest_solutions)
-    contextualized_response = contextualize_response(problem_description, combined_solution)
-    return contextualized_response, distances[0][0], combined_solution
+    contextualized_response = contextualize_response(problem_description, closest_solutions)
+    return contextualized_response, distances[0][0], closest_solutions
 
 
 # Function to add a message to the chat history
@@ -106,12 +107,12 @@ def send_message():
         # Display "Generating response..." between user input and assistant response
         add_message("Assistant", "Generating response...")
         with st.spinner("Generating response..."):
-            response, distance, predicted_solution = handle_problem(problem_description)
+            response, distance, predicted_solutions = handle_problem(problem_description)
             # Remove the "Generating response..." placeholder
             st.session_state['messages'].pop()
             add_message("Assistant", response)
             st.session_state['distance'] = distance
-            st.session_state['predicted_solution'] = predicted_solution
+            st.session_state['predicted_solutions'] = predicted_solutions
 
 
 # CSS to style the chat messages and input box
@@ -165,10 +166,11 @@ if 'distance' in st.session_state:
     st.write(f"Confidence: {st.session_state['distance'] * -100 + 100:.1f}%")
 
 # Toggle button to show/hide predicted solution
-if 'predicted_solution' in st.session_state:
-    st.session_state['show_solution'] = st.checkbox("Show Predicted Solution", st.session_state['show_solution'])
+if 'predicted_solutions' in st.session_state:
+    st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions", st.session_state['show_solution'])
     if st.session_state['show_solution']:
-        st.text_area("Predicted Solution:", st.session_state['predicted_solution'], height=150, disabled=True)
+        solutions_text = "\n\n".join([f"Solution {i+1}: {sol}" for i, sol in enumerate(st.session_state['predicted_solutions'])])
+        st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
 # Input text box and send button at the bottom
 with st.container():
