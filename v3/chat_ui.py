@@ -13,7 +13,7 @@ tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 
 # Define confidence threshold
-DISTANCE_THRESHOLD = 0.7
+DISTANCE_THRESHOLD = 0.5
 
 # Define a function to contextualize the output using LM Studio
 def contextualize_response(problem, solutions_with_confidences):
