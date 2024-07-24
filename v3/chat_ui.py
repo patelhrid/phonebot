@@ -12,6 +12,9 @@ tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
 # Initialize LM Studio client
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 
+# Define confidence threshold
+DISTANCE_THRESHOLD = 0.7
+
 # Define a function to contextualize the output using LM Studio
 def contextualize_response(problem, solutions_with_confidences):
     labeled_solutions = "\n".join([f"Solution {i+1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
@@ -32,7 +35,8 @@ def contextualize_response(problem, solutions_with_confidences):
                     f"of summarizing it. Ensure your response is strictly relevant to the predicted solutions without "
                     f"adding any external information. Do not create or fabricate information. Only use the provided "
                     f"solutions as your source. Your response should be authoritative and direct, tailored to help an "
-                    f"IT Support agent effectively resolve the issue. Do not use Markdown in your response."}
+                    f"IT Support agent effectively resolve the issue. Do not use Markdown in your response."
+                    f"Ignore the confidence levels in the predicted solutions entirely, they are NOT for your use."}
     ]
 
     completion = client.chat.completions.create(
@@ -60,6 +64,10 @@ def handle_problem(problem_description):
 
     # Predict the 3 closest solutions using KNN
     distances, indices = knn.kneighbors(X_new_tfidf, n_neighbors=3)
+
+    # Check if the closest solution exceeds the distance threshold
+    if distances[0][0] > DISTANCE_THRESHOLD:
+        return "Seek help from other sources.", distances[0][0], None
 
     # Collect the 3 closest solutions with their distances
     closest_solutions_with_confidences = []
