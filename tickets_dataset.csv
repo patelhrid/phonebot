@@ -2252,3 +2252,24 @@ Keeps seats of revu are currrently being used",Install BB v21.
 ,i can use my teams on my mobile phone but when i try to um use it on the computer it says an error occurred um and i don't know how to fix it,problem resolved itself after trying again
 ,how to transfer photos from iphone to laptop.,had client connect the iphone to the laptop via the charging cable and then transfer the desired pictures to the desktop folder that I created for her.
 ,pa account unable to login and account not expired and account was renewed, RESET PA ACCOUNT PASSWORD because it has to be reset after PA account expiry
+,Employee  needs to be added email list to receive notifications of payments requested in Pay cycle Manager,user has not employee id so need to add her full email address in the notification instead looking in the drop down
+,"cannot log in to AutoCad, after I enter user name and password, the application shuts down
+
+
+",personal password for the account
+,"I am not able to access the printers. After scanning my ID, it says authentication failed. Even after logging in, the same message appears. Can you help me fix this?",Gave client instructions
+,"cannot log in as editor on revu, it says all the spots are full and wait until someone logs off",Upgrade user to BBv21.
+,"The LMS allows users to pause and save the course to complete it later. However this is not working for WHMIS 2015 E-learning (course # 23001). It works fine to some extent, however, once we pass the self-check question 2 of 4 page in module 3, it always open this page when we resume the course. That means, users need to start from this slide and repeat some of the slides again to compete the course. For example, I stop at end of module 4 today to complete rest of course tomorrow. Tomorrow - when I resume the course, it will start from self-check question 2 of 4 page in module 3. And I have to repeat rest of module 3 and module 4 before I can complete the course.
+
+We (Health, Safety & Wellness) purchased this WHMIS 2015 e-learning (SCORM Package) from OSG, a training provider based in Ontario. We contacted them to verify if the SCORM package is malfunctioning, they confirmed that SCORM file is fine and no other customer has experienced the same issue. They suggested to check our LMS to resolve the issue.",Incompatible SCORM file. New file sent by vendor
+,"As discussed on the phone, I am having trouble paying the building fees for 36 Whitepoppy Dr through the online portal. I have tried using 2 different cards (visa & mastercard) but get different errors (please see below). Could you please help me out so that I can get the permit in queue for review?",Payment was completed in Moneris and updated in A2g. Amanda back office has confirmed they received payment details. Not sure why there was an error. Amanda portal staff will have to investigate that issue.
+,"Our integration Production server BISRVMNPAPP01AZ is not up after windows patch activity and we also got an email mentioning the patch is not completed. 
+
+Please look into this on priority and bring back the server soon.",reboot the server and reinstall the patch
+,"Need to print attachments from outlook
+
+Printing is set to print attachments but still not printing ","Unchecked print attachments property -> Did a test print
+
+Checked print attachment property -> Able to print attachments from outlook now"
+,my laptop is not connecting to the situation from internet wifi and it can only connect using the land cable affect you driving,"LAPTOP WAS TOMBSTONED
+UNINSTALLED JAVA"

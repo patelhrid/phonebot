@@ -15,7 +15,6 @@ client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 # Define confidence threshold
 DISTANCE_THRESHOLD = 0.7
 
-
 # Define a function to contextualize the output using LM Studio
 def contextualize_response(problem, solution):
     history = [
@@ -23,12 +22,11 @@ def contextualize_response(problem, solution):
          "content": "You are an intelligent assistant. You always provide well-reasoned answers that are both correct "
                     "and helpful."},
         {"role": "user",
-         "content": f"The problem is: '{problem}' The predicted solution is: '{solution}'. Please explain the "
-                    f"solution to the user in a well-structured sentence. If it isn't a relevant solution at all, "
-                    f"say \"Seek help elsewhere\" and nothing else, just that.\". Don't mention "
-                    f"'the solution', because I do not know what that even is, and instead talk about it like it's "
-                    f"your own. Your response must be instructional to myself, an IT Support agent, and you should be "
-                    f"telling me what to do. The solution belongs to you, so instruct me on the solution like I've "
+         "content": f"The problem is: '{problem}' The predicted solutions are: '{solution}'. Please combine, aggregate "
+                    f"and average the predicted solutions, and explain it to the user in a well-structured sentence. "
+                    f"Don't mention 'the solution', because I do not know what that even is, and instead talk about it "
+                    f"like it's your own. Your response must be instructional to an IT Support agent, and you should be"
+                    f" telling me what to do. The solution belongs to you, so instruct me on the solution like I've "
                     f"never heard about it before. You are to respond as if you are the only one providing knowledge, "
                     f"because you are the front facing part of the flow. So don't say \"Sure here's the solution\" or "
                     f"something like that. You ARE an AI chatbot trained to help IT technicians, so you can be honest "
@@ -64,17 +62,23 @@ def handle_problem(problem_description):
     # Vectorize using TF-IDF vectorizer
     X_new_tfidf = tfidf_vectorizer.transform([preprocessed_description])
 
-    # Predict the closest solution using KNN
-    distances, indices = knn.kneighbors(X_new_tfidf, n_neighbors=1)
-    distance = distances[0][0]
-    predicted_solution = df['Solution'].iloc[indices[0][0]]
+    # Predict the 3 closest solutions using KNN
+    distances, indices = knn.kneighbors(X_new_tfidf, n_neighbors=3)
 
-    # Contextualize the response
-    if distance > DISTANCE_THRESHOLD:
-        return "Seek help from other sources.", distance
+    # Check if the closest solution exceeds the distance threshold
+    # if distances[0][0] > DISTANCE_THRESHOLD:
+    #     return "Seek help from other sources.", distances[0][0], None
 
-    contextualized_response = contextualize_response(problem_description, predicted_solution)
-    return contextualized_response, distance, predicted_solution
+    # Collect the 3 closest solutions
+    closest_solutions = []
+    for i in range(3):
+        solution = df['Solution'].iloc[indices[0][i]]
+        closest_solutions.append(solution)
+
+    # Aggregate the 3 closest solutions into a single response
+    combined_solution = " ".join(closest_solutions)
+    contextualized_response = contextualize_response(problem_description, combined_solution)
+    return contextualized_response, distances[0][0], combined_solution
 
 
 # Function to add a message to the chat history
