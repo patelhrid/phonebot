@@ -34,8 +34,7 @@ def contextualize_response(problem, solutions):
                     f"of summarizing it. Ensure your response is strictly relevant to the predicted solutions without "
                     f"adding any external information. Do not create or fabricate information. Only use the provided "
                     f"solutions as your source. Your response should be authoritative and direct, tailored to help an "
-                    f"IT Support agent effectively resolve the issue. If the predicted solution is not applicable or "
-                    f"you do not have enough information, be honest about it and explain why."}
+                    f"IT Support agent effectively resolve the issue. Do not use Markdown in your response."}
     ]
 
     completion = client.chat.completions.create(
