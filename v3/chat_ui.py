@@ -13,8 +13,9 @@ tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 
 # Define a function to contextualize the output using LM Studio
-def contextualize_response(problem, solutions):
-    labeled_solutions = "\n".join([f"Solution {i+1}: {sol}" for i, sol in enumerate(solutions)])
+def contextualize_response(problem, solutions_with_confidences):
+    labeled_solutions = "\n".join([f"Solution {i+1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
+                                   for i, (sol, conf) in enumerate(solutions_with_confidences)])
     history = [
         {"role": "system",
          "content": "You are an intelligent assistant. You always provide well-reasoned answers that are both correct "
@@ -60,18 +61,19 @@ def handle_problem(problem_description):
     # Predict the 3 closest solutions using KNN
     distances, indices = knn.kneighbors(X_new_tfidf, n_neighbors=3)
 
-    # Collect the 3 closest solutions
-    closest_solutions = []
+    # Collect the 3 closest solutions with their distances
+    closest_solutions_with_confidences = []
     for i in range(3):
         solution = df['Solution'].iloc[indices[0][i]]
-        closest_solutions.append(solution)
+        confidence = distances[0][i]
+        closest_solutions_with_confidences.append((solution, confidence))
 
     # Calculate the average distance
     average_distance = distances[0][:3].mean()
 
     # Aggregate the 3 closest solutions into a single response
-    contextualized_response = contextualize_response(problem_description, closest_solutions)
-    return contextualized_response, average_distance, closest_solutions
+    contextualized_response = contextualize_response(problem_description, closest_solutions_with_confidences)
+    return contextualized_response, average_distance, closest_solutions_with_confidences
 
 
 # Function to add a message to the chat history
@@ -99,12 +101,12 @@ def send_message():
         # Display "Generating response..." between user input and assistant response
         add_message("Assistant", "Generating response...")
         with st.spinner("Generating response..."):
-            response, average_distance, predicted_solutions = handle_problem(problem_description)
+            response, average_distance, predicted_solutions_with_confidences = handle_problem(problem_description)
             # Remove the "Generating response..." placeholder
             st.session_state['messages'].pop()
             add_message("Assistant", response)
             st.session_state['distance'] = average_distance
-            st.session_state['predicted_solutions'] = predicted_solutions
+            st.session_state['predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
 
 
 # CSS to style the chat messages and input box
@@ -155,13 +157,16 @@ for message in st.session_state['messages']:
 
 # Display additional information if available
 if 'distance' in st.session_state:
-    st.write(f"Confidence: {(1 - st.session_state['distance']) * 100:.1f}%")
+    st.write(f"Average Confidence: {(1 - st.session_state['distance']) * 100:.1f}%")
 
-# Toggle button to show/hide predicted solution
-if 'predicted_solutions' in st.session_state:
+# Toggle button to show/hide predicted solutions
+if 'predicted_solutions_with_confidences' in st.session_state:
     st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions", st.session_state['show_solution'])
     if st.session_state['show_solution']:
-        solutions_text = "\n\n".join([f"Solution {i+1}: {sol}" for i, sol in enumerate(st.session_state['predicted_solutions'])])
+        solutions_text = "\n\n".join(
+            [f"Solution {i+1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
+             for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
+        )
         st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
 # Input text box and send button at the bottom
