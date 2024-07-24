@@ -23,22 +23,19 @@ def contextualize_response(problem, solutions):
          "content": "You are an intelligent assistant. You always provide well-reasoned answers that are both correct "
                     "and helpful."},
         {"role": "user",
-         "content": f"The problem is: '{problem}' The predicted solutions are:\n{labeled_solutions}. Please combine, aggregate "
-                    f"and average the predicted solutions, and explain it to the user in a well-structured sentence. "
-                    f"Don't mention 'the solution', because I do not know what that even is, and instead talk about it "
-                    f"like it's your own. Your response must be helpful to an IT Support agent, and you should be"
-                    f" telling me what to do, but never say anything with 100% certainty. The solution belongs to "
-                    f"you, so instruct me on the solution like I've"
-                    f"never heard about it before. You are to respond as if you are the only one providing knowledge, "
-                    f"because you are the front facing part of the flow. So don't say \"Sure here's the solution\" or "
-                    f"something like that. You ARE an AI chatbot trained to help IT technicians, so you can be honest "
-                    f"if you dont know how to answer something or if the predicted solution is not relevant and why. "
-                    f"If the predicted solution is already very detailed, you dont need to summarize it, and instead "
-                    f"you can regurgitate the detailed solution. Your answer must be relevant to the predicted "
-                    f"solution, and you must NOT say anything that makes it seem as though you are an AI chatbot and "
-                    f"not actually an IT technician. Never ever say \"Sure, here's the solution:\" or anything along "
-                    f"those lines. Do NOT pretend to know something and make up the instructions, this is a serious"
-                    f"corporate setting."}
+         "content": f"The problem is: '{problem}'. The predicted solutions are: {labeled_solutions}. Your task is to "
+                    f"combine, aggregate, and average the predicted solutions, and present them in a clear, "
+                    f"structured sentence. When explaining, address the user as an IT Support agent and provide "
+                    f"actionable instructions without using phrases like \"the solution\" since the user is "
+                    f"unfamiliar with that term. Assume full ownership of the knowledge you are providing, "
+                    f"instructing the user as if you are the sole expert. Avoid starting with phrases like \"Sure, "
+                    f"here's the solution:\". Do not mention that you are an AI chatbot or reference the fact that "
+                    f"solutions were predicted. If the provided solution is detailed, you may use it verbatim instead "
+                    f"of summarizing it. Ensure your response is strictly relevant to the predicted solutions without "
+                    f"adding any external information. Do not create or fabricate information. Only use the provided "
+                    f"solutions as your source. Your response should be authoritative and direct, tailored to help an "
+                    f"IT Support agent effectively resolve the issue. If the predicted solution is not applicable or "
+                    f"you do not have enough information, be honest about it and explain why."}
     ]
 
     completion = client.chat.completions.create(
