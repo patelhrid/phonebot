@@ -13,7 +13,7 @@ tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 
 # Define confidence threshold
-DISTANCE_THRESHOLD = 0.5
+DISTANCE_THRESHOLD = 0.7
 
 # Define a function to contextualize the output using LM Studio
 def contextualize_response(problem, solutions_with_confidences):
@@ -65,19 +65,21 @@ def handle_problem(problem_description):
     # Predict the 3 closest solutions using KNN
     distances, indices = knn.kneighbors(X_new_tfidf, n_neighbors=3)
 
-    # Check if the closest solution exceeds the distance threshold
-    if distances[0][0] > DISTANCE_THRESHOLD:
-        return "Seek help from other sources.", distances[0][0], None
-
     # Collect the 3 closest solutions with their distances
     closest_solutions_with_confidences = []
     for i in range(3):
         solution = df['Solution'].iloc[indices[0][i]]
         confidence = distances[0][i]
-        closest_solutions_with_confidences.append((solution, confidence))
+        # Only include solutions within the threshold
+        if confidence <= DISTANCE_THRESHOLD:
+            closest_solutions_with_confidences.append((solution, confidence))
 
-    # Calculate the average distance
-    average_distance = distances[0][:3].mean()
+    # Check if all solutions exceed the threshold
+    if len(closest_solutions_with_confidences) == 0:
+        return "No reliable solution found. Seek help from other sources.", 1.0, None
+
+    # Calculate the average distance of the solutions within the threshold
+    average_distance = sum([conf for _, conf in closest_solutions_with_confidences]) / len(closest_solutions_with_confidences)
 
     # Aggregate the 3 closest solutions into a single response
     contextualized_response = contextualize_response(problem_description, closest_solutions_with_confidences)
