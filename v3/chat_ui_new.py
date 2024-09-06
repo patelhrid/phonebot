@@ -186,6 +186,7 @@ if 'predicted_solutions_with_confidences' in st.session_state:
         )
         st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
+
 # Input text box and send button at the bottom
 with st.container():
     st.text_input(
