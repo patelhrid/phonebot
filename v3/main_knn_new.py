@@ -15,7 +15,7 @@ nltk.download('punkt')
 
 # Load dataset
 try:
-    df = pd.read_csv('tickets_dataset.csv', encoding='latin1')  # Adjust file path as necessary
+    df = pd.read_csv('../tickets_dataset.csv', encoding='latin1')  # Adjust file path as necessary
 except FileNotFoundError as e:
     print(f"FileNotFoundError: {e}")
     exit(1)
