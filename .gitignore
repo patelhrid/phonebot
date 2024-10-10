@@ -1,2 +1,8 @@
 /venv/
 tickets_dataset.csv
+/v3/tfidf_vectorizer2.pkl
+/v3/tfidf_vectorizer.pkl
+/v3/sbert_model.pkl
+/v3/decision_tree_model2.pkl
+/v3/knn_model.pkl
+/v3/knn_sbert_model.pkl
