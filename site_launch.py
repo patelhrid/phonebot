@@ -3,8 +3,11 @@ import subprocess
 
 
 def run_script():
+    # Get the directory where the executable or script is located
+    base_folder = os.path.dirname(os.path.abspath(__file__))
+
     # Step 1: Change directory to the 'v3' folder
-    v3_folder = os.path.join(os.getcwd(), 'v3')  # Assuming 'v3' is a subfolder in the current directory
+    v3_folder = os.path.join(base_folder, 'v3')
     os.chdir(v3_folder)
 
     print(f"Changed to directory: {os.getcwd()}")
@@ -18,8 +21,8 @@ def run_script():
         print(f"Error occurred while running 'main_knn_new.py': {e}")
         return
 
-    # Step 3: Change directory back to the project root where 'venv' is located
-    root_folder = os.path.dirname(os.getcwd())  # Assuming the root folder is one level up
+    # Step 3: Change directory back to the root folder where 'venv' is located
+    root_folder = base_folder
     os.chdir(root_folder)
 
     print(f"Changed back to root directory: {os.getcwd()}")
