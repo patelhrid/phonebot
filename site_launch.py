@@ -25,14 +25,25 @@ def run_script():
     print(f"Changed back to root directory: {os.getcwd()}")
 
     # Step 4: Activate the virtual environment and run 'chat_ui_new.py' using Streamlit
-    venv_path = os.path.join(root_folder, 'venv', 'Scripts',
-                             'activate')  # Adjust for your OS (Scripts for Windows, bin for Linux/Mac)
+    venv_activate_script = os.path.join(root_folder, 'venv', 'Scripts', 'activate.bat')  # Windows path
+
+    # Check for Linux/macOS
+    if not os.path.exists(venv_activate_script):
+        venv_activate_script = os.path.join(root_folder, 'venv', 'bin', 'activate')  # Unix path
 
     try:
-        print("Activating virtual environment and running 'chat_ui_new.py' with Streamlit...")
+        print("Activating virtual environment...")
 
-        # Run the Streamlit app using the virtual environment
-        subprocess.run([f'{venv_path} && streamlit run v3/chat_ui_new.py'], shell=True, check=True)
+        # For Windows
+        if os.name == 'nt':  # Windows system
+            # Use cmd.exe to run the activation script and Streamlit in sequence
+            subprocess.run(f'cmd /c "{venv_activate_script} && streamlit run v3/chat_ui_new.py"', shell=True,
+                           check=True)
+        else:  # For Linux/macOS
+            # Use bash for Unix-based systems to activate and run Streamlit
+            subprocess.run(f'bash -c "source {venv_activate_script} && streamlit run v3/chat_ui_new.py"', shell=True,
+                           check=True)
+
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running 'chat_ui_new.py' with Streamlit: {e}")
 
