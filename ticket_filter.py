@@ -12,8 +12,8 @@ def process_excel_file(input_file, output_file):
     df = df[df['Status'] == 'Resolved']
     
     # Remove rows where 'Resolution' has unwanted values (case insensitive)
-    unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test']
-    df = df[~df['Resolution'].str.lower().isin(unwanted_solutions)]
+    unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other']
+    df = df[~df['Resolution'].str.strip().str.lower().isin(unwanted_solutions)]
     
     # Drop the 'Status' column since it's no longer needed
     df = df.drop(columns=['Status'])

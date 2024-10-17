@@ -65,14 +65,15 @@ def contextualize_response(problem, solutions_with_confidences):
         {"role": "user",
          "content": f"The problem is: '{problem}'. The predicted solutions are: {labeled_solutions}. Your task is to "
                     f"combine, aggregate, and average the predicted solutions, and present them in a clear, "
-                    f"structured sentence. When explaining, address the user as an IT Support agent and provide "
-                    f"actionable instructions without using phrases like \"the solution\" since the user is "
+                    f"structured sentence. When explaining, address the user as if you are an IT Support agent and "
+                    f"provide actionable instructions without using phrases like \"the solution\" since the user is "
                     f"unfamiliar with that term. Assume full ownership of the knowledge you are providing, "
                     f"instructing the user as if you are the sole expert. Avoid starting with phrases like \"Sure, "
                     f"here's the solution:\". Do not mention that you are an AI chatbot or reference the fact that "
                     f"solutions were predicted. If the provided solution is detailed, you may use it verbatim instead "
                     f"of summarizing it. Ensure your response is strictly relevant to the predicted solutions without "
-                    f"adding any external information. Do not create or fabricate information. Only use the provided "
+                    f"adding any external information. If a predicted solution is not relevant, you must not use it."
+                    f" Do not create or fabricate information. Only use the provided "
                     f"solutions as your source. Your response should be authoritative and direct, tailored to help an "
                     f"IT Support agent effectively resolve the issue. Do not use Markdown in your response."
                     f"Ignore the confidence levels in the predicted solutions entirely, they are NOT for your use."}

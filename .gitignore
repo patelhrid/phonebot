@@ -6,3 +6,4 @@ tickets_dataset.csv
 /v3/decision_tree_model2.pkl
 /v3/knn_model.pkl
 /v3/knn_sbert_model.pkl
+/tickets_dataset_NEW.csv
