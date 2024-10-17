@@ -3,8 +3,7 @@ import joblib
 import streamlit as st
 from openai import OpenAI
 
-from main import clean_text, tokenize_and_remove_stopwords
-from main_knn import df
+from main_knn_new import clean_text, tokenize_and_remove_stopwords, df
 
 # Load model and vectorizer (SBERT-based KNN model)
 knn = joblib.load('knn_sbert_model.pkl')
@@ -15,7 +14,7 @@ sbert_model = joblib.load('sbert_model.pkl')
 client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio")
 
 # Load dataset for solutions
-df = pd.read_csv('../tickets_dataset_NEW.csv', encoding='latin1')  # Adjust file path
+df = pd.read_csv('tickets_dataset_NEW.csv', encoding='latin1')  # Adjust file path
 
 # Define confidence threshold
 DISTANCE_THRESHOLD = 0.7
