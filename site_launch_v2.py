@@ -9,9 +9,12 @@ import pandas as pd
 import joblib
 import streamlit as st
 from openai import OpenAI
-import os
 import sys
+from transformers import AutoTokenizer, AutoModel
+import os
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def tokenize_and_remove_stopwords(text):
     # Tokenization and removing stopwords
@@ -55,8 +58,17 @@ def resource_path(relative_path):
 
 @st.cache_resource
 def setup_once():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(__name__)
+    if hasattr(sys, '_MEIPASS'):
+        # Running in the PyInstaller bundled environment
+        base_path = sys._MEIPASS
+    else:
+        # Running as a normal Python script
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    cache_dir = os.path.join(base_path, "cache_dir")
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
+    model = AutoModel.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
+
     try:
         # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
         logger.info("Running 'main_knn_new_copy.py'...")
@@ -97,11 +109,8 @@ def setup_once():
 # Call the cached setup function
 setup_once()
 
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(__name__)
-
+@st.cache_resource
+def setup_streamlit():
     try:
         # Load model and vectorizer (SBERT-based KNN model)
         knn = joblib.load('knn_sbert_model.pkl')
@@ -300,16 +309,29 @@ if __name__ == "__main__":
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
 
-    # Check if the script is already running as a Streamlit subprocess
+setup_streamlit()
+
+logger.info("ATTEMPTING TO RUN STREAMLIT COMMAND")
+
+try:
+    # setup_once()
+    # Check if Streamlit is already running
     if os.getenv("STREAMLIT_RUNNING") != "true":
-        if hasattr(sys, '_MEIPASS'):
-            base_folder = sys._MEIPASS
-        else:
-            base_folder = os.path.dirname(os.path.abspath(__file__))
-        script = os.path.join(base_folder, 'site_launch_v2.py')
+        # Ensure correct path to 'site_launch_v2.py' within the bundled environment
+        script = resource_path('site_launch_v2.py')  # Use the appropriate file path
+        logger.info(script)
 
         # Set an environment variable to prevent recursive invocation
         os.environ["STREAMLIT_RUNNING"] = "true"
 
-        logger.info("Running 'chat_ui_new_copy.py' with Streamlit...")
-        subprocess.run([sys.executable, '-m', 'streamlit', 'run', script], check=True)
+        logger.info("Running Streamlit app...")
+
+        # Launch the Streamlit app using subprocess
+        subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false'],
+                       check=True)
+        os.system(f"streamlit run {script} --server.enableXsrfProtection=false")
+    else:
+        logger.info("Streamlit app is already running.")
+
+except subprocess.CalledProcessError as e:
+    logger.error(f"Error running Streamlit: {e}")
