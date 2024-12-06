@@ -53,7 +53,10 @@ def resource_path(relative_path):
     return absolute_path
 
 
-def setup():
+@st.cache_resource
+def setup_once():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
     try:
         # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
         logger.info("Running 'main_knn_new_copy.py'...")
@@ -85,11 +88,14 @@ def setup():
         joblib.dump(sbert_model, 'sbert_model.pkl')
 
         print("SBERT model and KNN model saved successfully.")
-
         logger.info("'main_knn_new_copy.py' finished successfully.")
+
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'main_knn_new_copy.py': {e}")
         exit(-1)
+
+# Call the cached setup function
+setup_once()
 
 
 if __name__ == "__main__":
@@ -288,17 +294,14 @@ if __name__ == "__main__":
                 key="input_text",
                 placeholder="Type your message here...",
                 label_visibility="collapsed",
-                on_change=send_message,
-                args=(),
             )
+
             st.button("Send", on_click=send_message, key="send_button")
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
 
     # Check if the script is already running as a Streamlit subprocess
     if os.getenv("STREAMLIT_RUNNING") != "true":
-        setup()
-
         if hasattr(sys, '_MEIPASS'):
             base_folder = sys._MEIPASS
         else:
