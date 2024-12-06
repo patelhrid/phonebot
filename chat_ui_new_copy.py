@@ -32,7 +32,6 @@ def resource_path(relative_path):
 
     return absolute_path
 
-
 # Load model and vectorizer (SBERT-based KNN model)
 knn = joblib.load('knn_sbert_model.pkl')
 sbert_model = joblib.load('sbert_model.pkl')
