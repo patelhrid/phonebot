@@ -126,7 +126,7 @@ def setup_streamlit():
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
 
         # Define confidence threshold
-        DISTANCE_THRESHOLD = 0.7
+        DISTANCE_THRESHOLD = 0.5
 
         # Function to predict and contextualize solution for a given problem
         def handle_problem(problem_description):
@@ -183,7 +183,9 @@ def setup_streamlit():
                             f" Do not create or fabricate information. Only use the provided "
                             f"solutions as your source. Your response should be authoritative and direct, tailored to help an "
                             f"IT Support agent effectively resolve the issue. Do not use Markdown in your response."
-                            f"Ignore the confidence levels in the predicted solutions entirely, they are NOT for your use."}
+                            f"Ignore the confidence levels in the predicted solutions entirely, they are NOT for your use."
+                            f"Avoid any specific dates, names, serial numbers, or any specific information in general."
+                            f"Be incredibly detailed, verbose, thorough and descriptive in your troubleshooting advice."}
             ]
 
             completion = client.chat.completions.create(
@@ -199,9 +201,6 @@ def setup_streamlit():
                     response += chunk.choices[0].delta.content
 
             return response
-
-        # Streamlit UI (same as before)
-        st.title("ChatGPIT")
 
         if 'messages' not in st.session_state:
             st.session_state['messages'] = []
@@ -235,40 +234,155 @@ def setup_streamlit():
         st.markdown(
             """
             <style>
-            .user-message {
-                background-color: #7E7F83;
-                border-radius: 10px;
-                padding: 10px;
-                margin: 10px 0;
+            @import url('https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&display=swap');
+            
+            h1 {
+                font-family: 'Parkinsans', sans-serif;
+                font-size: 2.5rem; /* Adjust size as needed */
+                font-weight: 600;  /* Semi-bold for emphasis */
+                text-align: center; /* Optional: center-align title */
+                margin-bottom: 20px; /* Add spacing below title */
             }
-            .assistant-message {
-                background-color: #202030;
-                border-radius: 10px;
-                padding: 10px;
-                margin: 10px 0;
+            
+            /* Apply the font to all elements */
+            html, body, [class*="css"] {
+                font-family: 'Parkinsans', sans-serif;
             }
-            .chat-input-container {
-                position: fixed;
-                bottom: 0;
-                width: 100%;
+        
+            /* Specific styles for Streamlit components */
+            .stButton>button,
+            .stTextInput input,
+            .stTextArea textarea,
+            .stMarkdown,
+            .stSlider,
+            .stRadio,
+            .stCheckbox,
+            .stcheckbox
+            .stNumberInput,
+            .stFileUploader,
+            .stDateInput,
+            .stColorPicker,
+            .stMetric {
+                font-family: 'Parkinsans', sans-serif;
+            }
+                
+            /* Chat Container */
+            .chat-container {
                 display: flex;
-                align-items: center;
-                background-color: white;
-                padding: 10px;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-                z-index: 999;
+                flex-direction: column;
+                padding: 20px;
+                margin: 0 auto;
+                margin-bottom: 70px;  /* Ensure there's space for the fixed input area */
+                max-width: 800px;
+                min-height: 80vh;
+                font-family: 'Parkinsans', sans-serif;
             }
-            .chat-input {
-                flex-grow: 1;
-                margin-right: 10px;
+            
+            /* User Messages */
+            .user-message {
+                background-color: #00c1d8;
+                color: white;
+                border-radius: 15px 15px 0 15px;
+                padding: 12px 16px;
+                margin: 10px 0;
+                width: fit-content;
+                max-width: 70%;
+                text-align: left;
+                margin-left: auto;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                font-size: 14px;
+                line-height: 1.5;
+                font-family: 'Parkinsans', sans-serif;
             }
-            .chat-send-button {
-                flex-shrink: 0;
+            
+            /* Assistant Messages */
+            .assistant-message {
+                background-color: #004b9a;
+                color: white;
+                border-radius: 15px 15px 15px 0;
+                padding: 12px 16px;
+                margin: 10px 0;
+                width: fit-content;
+                max-width: 70%;
+                text-align: left;
+                margin-right: auto;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                font-size: 14px;
+                line-height: 1.5;
+                font-family: 'Parkinsans', sans-serif;
             }
+            
+            /* Optional: Modify other areas like the chat input */
+            .chat-input-container, .chat-input, .chat-send-button {
+                font-family: 'Parkinsans', sans-serif;
+            }
+            
+            /* Make sure the content doesn't overlap the fixed input box at the bottom */
+    .main-container {
+        padding-bottom: 80px; /* Space for the fixed input box */
+        height: 100%;
+        overflow-y: auto; /* Allow scroll for content above the input box */
+    }
+
+    /* Style for the chat input container fixed at the bottom */
+    .chat-input-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 12px 20px;
+        border-top: 1px solid #e0e0e0;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 9999;
+    }
+
+    /* Style for the chat input field */
+    .chat-input {
+        flex-grow: 1;
+        border: 1px solid #dcdcdc;
+        border-radius: 20px;
+        padding: 10px 15px;
+        font-size: 14px;
+        outline: none;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: border-color 0.2s;
+    }
+
+    .chat-input:focus {
+        border-color: #00c1d8;
+    }
+
+    /* Style for the send button */
+    .chat-send-button {
+        background-color: #00c1d8;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .chat-send-button:hover {
+        background-color: #009fb2;
+        transform: scale(1.1);
+    }
             </style>
+
             """,
             unsafe_allow_html=True
         )
+
+        st.title("Welcome to ChatGPIT")
 
         # Display the chat history
         for message in st.session_state['messages']:
@@ -279,7 +393,7 @@ def setup_streamlit():
 
         # Display additional information if available
         if 'distance' in st.session_state:
-            st.write(f"Average Confidence: {(1 - st.session_state['distance']) * 100:.1f}%")
+            st.write(f"Average Confidence: {(1 - st.session_state['distance']) * 100:.0f}%")
 
         # Toggle button to show/hide predicted solutions
         if 'predicted_solutions_with_confidences' in st.session_state:
@@ -299,10 +413,10 @@ def setup_streamlit():
                 key="input_text",
                 placeholder="Type your message here...",
                 label_visibility="collapsed",
-                on_change=send_message,
                 args=(),
             )
-            st.button("Send", on_click=send_message, key="send_button")
+            if st.button("Send", on_click=send_message, key="send_button"):
+                send_message()
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
