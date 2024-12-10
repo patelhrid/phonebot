@@ -1,6 +1,8 @@
 import subprocess
 import logging
 import re
+from pydoc import classname
+
 from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
 from nltk.corpus import stopwords
@@ -216,12 +218,16 @@ def setup_streamlit():
         if 'messages' not in st.session_state:
             st.session_state['messages'] = []
 
+        if 'all_follow_up' not in st.session_state:
+            st.session_state['all_follow_up'] = []
+
         if 'show_solution' not in st.session_state:
             st.session_state['show_solution'] = False
 
         # Function to add a message to the chat history
         def add_message(sender, message):
             st.session_state['messages'].append({"sender": sender, "message": message})
+            # st.session_state['all_follow_up'].append(message)
 
         # Function to handle sending a message
         def send_message():
@@ -229,6 +235,7 @@ def setup_streamlit():
             if problem_description:
                 if 'initial_problem' not in st.session_state:
                     st.session_state['initial_problem'] = problem_description
+                    st.session_state["all_follow_up"] = []  # Initialize follow-up messages
                     add_message("User", problem_description)
                     st.session_state.input_text = ""
 
@@ -241,8 +248,16 @@ def setup_streamlit():
                         st.session_state['distance'] = average_distance
                         st.session_state['predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
                 else:
-                    full_context = f"{st.session_state['initial_problem']}. Follow-up: {problem_description}"
+                    # Append new message to all_follow_up
+                    st.session_state["all_follow_up"].append(problem_description)
+
+                    # Combine the initial problem and all follow-ups for context
+                    full_context = f"{st.session_state['initial_problem']} "  # Include initial problem first
+                    for fo in st.session_state["all_follow_up"]:  # Include all follow-ups
+                        full_context += f"Follow-up: {fo} "
+
                     if should_requery(full_context):
+                        # Re-query with updated context
                         st.session_state['initial_problem'] = full_context
                         add_message("User", problem_description)
                         st.session_state.input_text = ""
@@ -257,24 +272,21 @@ def setup_streamlit():
                             st.session_state[
                                 'predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
                     else:
+                        # If it's a non-query follow-up, use the full context to handle response
                         add_message("User", problem_description)
                         st.session_state.input_text = ""
 
                         add_message("Assistant", "Thinking...")
                         with st.spinner("Generating response..."):
-                            response = handle_follow_up(problem_description)
+                            response = handle_follow_up(full_context)  # Pass the full context, including all follow-ups
                             st.session_state['messages'].pop()
                             add_message("Assistant", response)
 
         # Function to handle follow-up messages and contextualize the response
-        def handle_follow_up(new_message):
-            # Combine the initial problem description and the new message for contextualization
-            full_conversation = f"Initial problem: {st.session_state['initial_problem']}. Follow-up: {new_message}"
-
-            # Contextualize the response with LM Studio
-            response = contextualize_response(full_conversation,
+        def handle_follow_up(full_context):
+            # Now full_context includes the initial problem and all follow-up messages
+            response = contextualize_response(full_context,
                                               st.session_state['predicted_solutions_with_confidences'])
-
             return response
 
         def should_requery(problem_description):
@@ -388,66 +400,64 @@ def setup_streamlit():
             }
 
             /* Make sure the content doesn't overlap the fixed input box at the bottom */
-    .main-container {
-        padding-bottom: 80px; /* Space for the fixed input box */
-        height: 100%;
-        overflow-y: auto; /* Allow scroll for content above the input box */
-    }
-
-    /* Style for the chat input container fixed at the bottom */
-    .chat-input-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        background-color: #ffffff;
-        padding: 12px 20px;
-        border-top: 1px solid #e0e0e0;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 9999;
-    }
-
-    /* Style for the chat input field */
-    .chat-input {
-        flex-grow: 1;
-        border: 1px solid #dcdcdc;
-        border-radius: 20px;
-        padding: 10px 15px;
-        font-size: 14px;
-        outline: none;
-        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-        transition: border-color 0.2s;
-    }
-
-    .chat-input:focus {
-        border-color: #00c1d8;
-    }
-
-    /* Style for the send button */
-    .chat-send-button {
-        background-color: #00c1d8;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 10px;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.2s, transform 0.2s;
-    }
-
-    .chat-send-button:hover {
-        background-color: #009fb2;
-        transform: scale(1.1);
-    }
-            </style>
-
+            .main-container {
+                padding-bottom: 80px; /* Space for the fixed input box */
+                height: 100%;
+                overflow-y: auto; /* Allow scroll for content above the input box */
+            }
+        
+            /* Style for the chat input container fixed at the bottom */
+            .chat-input-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                background-color: #ffffff;
+                padding: 12px 20px;
+                border-top: 1px solid #e0e0e0;
+                box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 9999;
+            }
+        
+            /* Style for the chat input field */
+            .chat-input {
+                flex-grow: 1;
+                border: 1px solid #dcdcdc;
+                border-radius: 20px;
+                padding: 10px 15px;
+                font-size: 14px;
+                outline: none;
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+                transition: border-color 0.2s;
+            }
+        
+            .chat-input:focus {
+                border-color: #00c1d8;
+            }
+        
+            /* Style for the send button */
+            .chat-send-button {
+                background-color: #00c1d8;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: 10px;
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.2s, transform 0.2s;
+            }
+        
+            .chat-send-button:hover {
+                background-color: #009fb2;
+                transform: scale(1.1);
+            }
             """,
             unsafe_allow_html=True
         )
@@ -477,21 +487,28 @@ def setup_streamlit():
                 st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
         # Input text box and send button at the bottom
+        # Input text box and send button at the bottom
         with st.container():
-            st.text_input(
-                "Please describe your IT problem:",
-                key="input_text",
-                placeholder="Type your message here...",
-                label_visibility="collapsed",
-                args=(),
-            )
-            if st.button("Send", on_click=send_message, key="send_button"):
-                send_message()
+            cols = st.columns([4, 1])  # Adjust the column width ratio
+            with cols[0]:
+                st.text_input(
+                    "Please describe your IT problem:",
+                    key="input_text",
+                    placeholder="Type your message here...",
+                    label_visibility="collapsed",
+                )
+            with cols[1]:
+                st.button("Send", on_click=send_message, key="send_button", use_container_width=True)
 
-        if st.button("Reset Conversation"):
-            st.session_state['messages'] = []
-            st.session_state.pop('initial_problem', None)  # Clear the initial problem
-
+        with st.sidebar:
+            st.markdown("### Options")
+            if st.button("Reset Conversation"):
+                st.session_state['messages'] = []
+                st.session_state.pop('initial_problem', None)  # Clear the initial problem
+                st.session_state.pop('distance', None)
+                st.session_state.pop('predicted_solutions_with_confidences', None)
+                st.session_state['show_solution'] = False
+                st.session_state['all_follow_up'] = []
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
