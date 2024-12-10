@@ -128,7 +128,6 @@ def setup_streamlit():
         # Define confidence threshold
         DISTANCE_THRESHOLD = 0.7
 
-
         # Function to predict and contextualize solution for a given problem
         def handle_problem(problem_description):
             # Preprocess the input description
@@ -161,7 +160,6 @@ def setup_streamlit():
             # Aggregate the 3 closest solutions into a single response
             contextualized_response = contextualize_response(problem_description, closest_solutions_with_confidences)
             return contextualized_response, average_distance, closest_solutions_with_confidences
-
 
         # Define a function to contextualize the output using LM Studio
         def contextualize_response(problem, solutions_with_confidences):
@@ -202,13 +200,14 @@ def setup_streamlit():
 
             return response
 
-        # Title of the application
-        st.markdown("<h1 style='text-align: center; color: #ffffff; margin-bottom: 20px;'>ChatGPIT</h1>",
-                    unsafe_allow_html=True)
+        # Streamlit UI (same as before)
+        st.title("ChatGPIT")
 
-        # Initialize session state variables if not already set
         if 'messages' not in st.session_state:
             st.session_state['messages'] = []
+
+        if 'show_solution' not in st.session_state:
+            st.session_state['show_solution'] = False
 
         # Function to add a message to the chat history
         def add_message(sender, message):
@@ -221,107 +220,89 @@ def setup_streamlit():
                 add_message("User", problem_description)
                 st.session_state.input_text = ""
 
-                # Placeholder message while generating a response
-                add_message("Assistant", "Thinking...")
+                # Display "Generating response..." between user input and assistant response
+                add_message("Assistant", "Generating response...")
                 with st.spinner("Generating response..."):
                     response, average_distance, predicted_solutions_with_confidences = handle_problem(
                         problem_description)
-                    # Replace placeholder with the actual response
+                    # Remove the "Generating response..." placeholder
                     st.session_state['messages'].pop()
                     add_message("Assistant", response)
                     st.session_state['distance'] = average_distance
                     st.session_state['predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
 
-        # CSS for ChatGPT-like styling
+        # CSS to style the chat messages and input box
         st.markdown(
             """
             <style>
-            body {
-                background-color: #202123;
-                color: #f1f1f1;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-            /* User and assistant messages */
-            .message {
-                max-width: 50%; /* Reduced max width for better alignment */
-                min-width: 100px;
-                padding: 12px;
-                margin: 8px 0;
-                border-radius: 12px;
-                word-wrap: break-word;
-                font-size: 14px;
-            }
             .user-message {
-                background-color: #0078FF;
-                color: white;
-                margin-left: auto;
-                text-align: right;
+                background-color: #7E7F83;
+                border-radius: 10px;
+                padding: 10px;
+                margin: 10px 0;
             }
             .assistant-message {
-                background-color: #F1F1F1;
-                color: #333;
-                margin-right: auto;
-                text-align: left;
+                background-color: #202030;
+                border-radius: 10px;
+                padding: 10px;
+                margin: 10px 0;
+            }
+            .chat-input-container {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                background-color: white;
+                padding: 10px;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                z-index: 999;
             }
             .chat-input {
                 flex-grow: 1;
-                padding: 10px;
-                border: none;
-                font-size: 14px;
-                border-radius: 5px;
-                outline: none;
                 margin-right: 10px;
-                background-color: #40414f;
-                color: white;
             }
             .chat-send-button {
-                background-color: #0078FF;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 10px 15px;
-                font-size: 14px;
-                cursor: pointer;
-            }
-            .chat-send-button:hover {
-                background-color: #005BBB;
+                flex-shrink: 0;
             }
             </style>
             """,
             unsafe_allow_html=True
         )
 
-        # Chat messages display
-        st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-        if st.session_state['messages']:
-            for message in st.session_state['messages']:
-                if message['sender'] == "User":
-                    st.markdown(
-                        f"<div class='message user-message'>{message['message']}</div>",
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.markdown(
-                        f"<div class='message assistant-message'>{message['message']}</div>",
-                        unsafe_allow_html=True
-                    )
-        else:
-            st.markdown("<div class='empty-placeholder'>Start the conversation by typing below.</div>",
-                        unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Display the chat history
+        for message in st.session_state['messages']:
+            if message['sender'] == "User":
+                st.markdown(f"<div class='user-message'>{message['message']}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div class='assistant-message'>{message['message']}</div>", unsafe_allow_html=True)
 
-        # Input box and send button
-        st.markdown("<div class='chat-input-container'>", unsafe_allow_html=True)
-        st.text_input(
-            "Type your message here...",
-            key="input_text",
-            placeholder="Send a message...",
-            label_visibility="collapsed"
-        )
-        st.button("Send", on_click=send_message, key="send_button")
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Display additional information if available
+        if 'distance' in st.session_state:
+            st.write(f"Average Confidence: {(1 - st.session_state['distance']) * 100:.1f}%")
 
+        # Toggle button to show/hide predicted solutions
+        if 'predicted_solutions_with_confidences' in st.session_state:
+            st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions",
+                                                            st.session_state['show_solution'])
+            if st.session_state['show_solution']:
+                solutions_text = "\n\n".join(
+                    [f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
+                     for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
+                )
+                st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
+        # Input text box and send button at the bottom
+        with st.container():
+            st.text_input(
+                "Please describe your IT problem:",
+                key="input_text",
+                placeholder="Type your message here...",
+                label_visibility="collapsed",
+                on_change=send_message,
+                args=(),
+            )
+            st.button("Send", on_click=send_message, key="send_button")
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
