@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="ChatGPIT", layout="wide")
 
 
-def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx", output_file="tickets_dataset_NEW.csv"):
+def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx", knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
     try:
         # Load the main dataset
         df = pd.read_excel(input_file)
@@ -55,7 +55,6 @@ def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx", output_file=
         df.to_csv("filtered_tickets_dataset.csv", index=False, encoding="utf-8")
 
         # Paths to the files
-        knowledge_articles_file = "knowledge_articles_export.xlsx"  # Update with your file path
         tickets_file = "filtered_tickets_dataset.csv"  # Update with your file path
 
         # Load the knowledge articles
