@@ -1,7 +1,7 @@
+import datetime
 import subprocess
 import logging
 import re
-from pydoc import classname
 
 from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
@@ -14,15 +14,17 @@ from openai import OpenAI
 import sys
 from transformers import AutoTokenizer, AutoModel
 import os
+from streamlit_extras.concurrency_limiter import concurrency_limiter
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Enable wide mode
-st.set_page_config(page_title="ChatGPIT", layout="wide")
+st.set_page_config(page_title="ChatCOB", layout="wide")
 
-
-def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx", knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
+@concurrency_limiter(max_concurrency=1)
+def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx",
+                  knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
     try:
         # Load the main dataset
         df = pd.read_excel(input_file)
@@ -98,9 +100,31 @@ def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx", knowledge_ar
         print(f"An error occurred: {e}")
 
 
-dataset_setup()
+# Function to save chat history as a log file
+@concurrency_limiter(max_concurrency=1)
+def save_chat_history():
+    # Create Logs folder if it doesn't exist
+    logs_folder = "Logs"
+    if not os.path.exists(logs_folder):
+        os.makedirs(logs_folder)
 
+    # Format the chat history
+    chat_history = st.session_state.get('messages', [])
+    log_content = "\n".join(
+        f"{entry['sender']}: {entry['message']}" for entry in chat_history
+    )
 
+    # Generate a unique filename based on the timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    filename = os.path.join(logs_folder, f"LOG_{timestamp}.txt")
+
+    # Write the log content to the file
+    with open(filename, "w") as log_file:
+        log_file.write(log_content)
+
+    st.success(f"Chat history saved to {filename}!")
+
+@concurrency_limiter(max_concurrency=1)
 def tokenize_and_remove_stopwords(text):
     # Tokenization and removing stopwords
     stop_words = set(stopwords.words('english'))
@@ -109,6 +133,7 @@ def tokenize_and_remove_stopwords(text):
     return ' '.join(filtered_tokens)
 
 
+@concurrency_limiter(max_concurrency=1)
 # Clean text: lowercase, remove extra spaces and punctuation
 def clean_text(text):
     text = text.lower()  # Convert to lowercase
@@ -116,7 +141,7 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()  # Remove extra spaces
     return text
 
-
+@concurrency_limiter(max_concurrency=1)
 def resource_path(relative_path):
     """ Get absolute path to resource, works for both dev and PyInstaller """
     try:
@@ -141,6 +166,7 @@ def resource_path(relative_path):
     return absolute_path
 
 
+@concurrency_limiter(max_concurrency=1)
 @st.cache_resource
 def setup_once():
     if hasattr(sys, '_MEIPASS'):
@@ -196,16 +222,16 @@ def setup_once():
 # Call the cached setup function
 setup_once()
 
-
+@concurrency_limiter(max_concurrency=1)
 def setup_streamlit():
     try:
         # Load model and vectorizer (SBERT-based KNN model)
         knn = joblib.load('knn_sbert_model.pkl')
         sbert_model = joblib.load('sbert_model.pkl')
 
-        # Initialize LM Studio client http://172.29.15.223:8000/
+        # Initialize LM Studio client
         # client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        client = OpenAI(base_url="http://172.29.15.223:8000/v1", api_key="lm-studio")  # P15 LM Studio
+        client = OpenAI(base_url="http://172.30.178.142:8000/v1", api_key="lm-studio")  # P15 LM Studio
 
         # Load dataset for solutions
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
@@ -214,6 +240,7 @@ def setup_streamlit():
         DISTANCE_THRESHOLD = 0.5
 
         # Function to predict and contextualize solution for a given problem
+        @concurrency_limiter(max_concurrency=1)
         def handle_problem(problem_description):
             preprocessed_description = clean_text(problem_description)
             preprocessed_description = tokenize_and_remove_stopwords(preprocessed_description)
@@ -243,6 +270,7 @@ def setup_streamlit():
             return contextualized_response, average_distance, closest_solutions_with_confidences
 
         # Define a function to contextualize the output using LM Studio
+        @concurrency_limiter(max_concurrency=1)
         def contextualize_response(problem, solutions_with_confidences):
             conversation_history = [
                 {"role": "system",
@@ -304,11 +332,13 @@ def setup_streamlit():
             st.session_state['show_solution'] = False
 
         # Function to add a message to the chat history
+        @concurrency_limiter(max_concurrency=1)
         def add_message(sender, message):
             st.session_state['messages'].append({"sender": sender, "message": message})
             # st.session_state['all_follow_up'].append(message)
 
         # Function to handle sending a message
+        @concurrency_limiter(max_concurrency=1)
         def send_message():
             problem_description = st.session_state.input_text
             if problem_description:
@@ -362,12 +392,14 @@ def setup_streamlit():
                             add_message("Assistant", response)
 
         # Function to handle follow-up messages and contextualize the response
+        @concurrency_limiter(max_concurrency=1)
         def handle_follow_up(full_context):
             # Now full_context includes the initial problem and all follow-up messages
             response = contextualize_response(full_context,
                                               st.session_state['predicted_solutions_with_confidences'])
             return response
 
+        @concurrency_limiter(max_concurrency=1)
         def should_requery(problem_description):
             requery_keywords = ['didn’t work', 'not solved', 'try again', 'recheck', 'failed', 'problem persists']
             retry_indicators = ['retry', 'recheck', 'check again', 'try again']
@@ -484,7 +516,7 @@ def setup_streamlit():
                 height: 100%;
                 overflow-y: auto; /* Allow scroll for content above the input box */
             }
-        
+
             /* Style for the chat input container fixed at the bottom */
             .chat-input-container {
                 position: fixed;
@@ -499,7 +531,7 @@ def setup_streamlit():
                 box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
                 z-index: 9999;
             }
-        
+
             /* Style for the chat input field */
             .chat-input {
                 flex-grow: 1;
@@ -511,11 +543,11 @@ def setup_streamlit():
                 box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
                 transition: border-color 0.2s;
             }
-        
+
             .chat-input:focus {
                 border-color: #00c1d8;
             }
-        
+
             /* Style for the send button */
             .chat-send-button {
                 background-color: #00c1d8;
@@ -532,7 +564,7 @@ def setup_streamlit():
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 transition: background-color 0.2s, transform 0.2s;
             }
-        
+
             .chat-send-button:hover {
                 background-color: #009fb2;
                 transform: scale(1.1);
@@ -541,7 +573,8 @@ def setup_streamlit():
             unsafe_allow_html=True
         )
 
-        st.title("Welcome to ChatGPIT")
+        st.title("Welcome to ChatCOB")
+        st.caption("You are accountable for everything that you say to the client. Use responses from this site to your discretion.")
 
         # Display the chat history
         for message in st.session_state['messages']:
@@ -558,14 +591,13 @@ def setup_streamlit():
         if 'predicted_solutions_with_confidences' in st.session_state:
             st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions",
                                                             st.session_state['show_solution'])
-            if st.session_state['show_solution']:
+            if st.session_state['show_solution'] and st.session_state['predicted_solutions_with_confidences'] is not None:
                 solutions_text = "\n\n".join(
                     [f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
                      for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
                 )
                 st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
-        # Input text box and send button at the bottom
         # Input text box and send button at the bottom
         with st.container():
             cols = st.columns([4, 1])  # Adjust the column width ratio
@@ -589,19 +621,36 @@ def setup_streamlit():
                 st.session_state['show_solution'] = False
                 st.session_state['all_follow_up'] = []
 
+            if st.button("Report Conversation"):
+                # Display a message when the button is clicked
+                st.markdown("""
+                    <div style='text-align: center;'>
+                        <strong style="color: red;">Please submit feedback related to the reported conversation below.</strong>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                # Generate log file and store the chat history
+                save_chat_history()
+
+            st.markdown("""
+            <div style='text-align: center; margin-top: 20px;'>
+                <a href="https://forms.gle/RYGRK5c7jhybijGz8" target="_blank">
+                    <button style="background-color: #00c1d8; color: white; border: none; padding: 10px 20px; 
+                    border-radius: 5px; cursor: pointer;">Feedback</button>
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
+
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
 
 
 setup_streamlit()
 
-# logger.info("ATTEMPTING TO RUN STREAMLIT COMMAND")
 
 try:
-    # setup_once()
     # Check if Streamlit is already running
     if os.getenv("STREAMLIT_RUNNING") != "true":
-        # Ensure correct path to 'site_launch_v2.py' within the bundled environment
         script = resource_path('site_launch_conv.py')  # Use the appropriate file path
         logger.info(script)
 
@@ -611,7 +660,7 @@ try:
         logger.info("Running Streamlit app...")
 
         # Launch the Streamlit app using subprocess
-        subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false'],
+        subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false', '--server.port', '8501'],
                        check=True)
         os.system(f"streamlit run {script} --server.enableXsrfProtection=false")
     else:
