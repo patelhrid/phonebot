@@ -1,3 +1,4 @@
+import datetime
 import subprocess
 import logging
 import re
@@ -16,6 +17,7 @@ import sys
 from transformers import AutoTokenizer, AutoModel
 import os
 import faiss
+from streamlit_extras.concurrency_limiter import concurrency_limiter
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,7 +26,7 @@ logger = logging.getLogger(__name__)
 # Enable wide mode
 st.set_page_config(page_title="BramBot", layout="wide")
 
-
+@concurrency_limiter(max_concurrency=1)
 def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx", knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
     try:
         # Load the main dataset
@@ -35,10 +37,10 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx", knowledge_art
         df = df[columns_to_keep]
 
         # Filter rows to keep only the ones with 'Resolved' status
-        df = df[df['Status'] == 'Resolved']
+        df = df[df['Status'].isin(['Resolved', 'Closed'])]
 
         # Remove rows where 'Resolution' has unwanted values (case-insensitive)
-        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other']
+        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other', 'see notes']
         df = df[~df['Resolution'].str.strip().str.lower().isin(unwanted_solutions)]
 
         # Remove rows where 'Resolution' is empty
@@ -100,10 +102,9 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx", knowledge_art
     except Exception as e:
         print(f"An error occurred: {e}")
 
-
 dataset_setup()
 
-
+@concurrency_limiter(max_concurrency=1)
 def tokenize_and_remove_stopwords(text):
     # Tokenization and removing stopwords
     stop_words = set(stopwords.words('english'))
@@ -113,13 +114,14 @@ def tokenize_and_remove_stopwords(text):
 
 
 # Clean text: lowercase, remove extra spaces and punctuation
+@concurrency_limiter(max_concurrency=1)
 def clean_text(text):
     text = text.lower()  # Convert to lowercase
     text = re.sub(r'[^a-zA-Z\s]', '', text)  # Remove punctuation
     text = re.sub(r'\s+', ' ', text).strip()  # Remove extra spaces
     return text
 
-
+@concurrency_limiter(max_concurrency=1)
 def resource_path(relative_path):
     """ Get absolute path to resource, works for both dev and PyInstaller """
     try:
@@ -201,7 +203,31 @@ def setup_once():
 # Call the cached setup function
 setup_once()
 
+# Function to save chat history as a log file
+@concurrency_limiter(max_concurrency=1)
+def save_chat_history():
+    # Create Logs folder if it doesn't exist
+    logs_folder = "Logs"
+    if not os.path.exists(logs_folder):
+        os.makedirs(logs_folder)
 
+    # Format the chat history
+    chat_history = st.session_state.get('messages', [])
+    log_content = "\n".join(
+        f"{entry['sender']}: {entry['message']}" for entry in chat_history
+    )
+
+    # Generate a unique filename based on the timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    filename = os.path.join(logs_folder, f"LOG_{timestamp}.txt")
+
+    # Write the log content to the file
+    with open(filename, "w") as log_file:
+        log_file.write(log_content)
+
+    st.success(f"Chat history saved to {filename}!")
+
+@concurrency_limiter(max_concurrency=1)
 def setup_streamlit():
     try:
         # Load model and vectorizer (SBERT-based KNN model)
@@ -555,7 +581,7 @@ def setup_streamlit():
             unsafe_allow_html=True
         )
 
-        st.title("Welcome to ChatGPIT")
+        st.title("Welcome to BramBot")
 
         # Display the chat history
         for message in st.session_state['messages']:
@@ -603,6 +629,26 @@ def setup_streamlit():
                 st.session_state['show_solution'] = False
                 st.session_state['all_follow_up'] = []
 
+            if st.button("Report Conversation"):
+                # Display a message when the button is clicked
+                st.markdown("""
+                    <div style='text-align: center;'>
+                        <strong style="color: red;">Please submit feedback related to the reported conversation below.</strong>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                # Generate log file and store the chat history
+                save_chat_history()
+
+            st.markdown("""
+            <div style='text-align: center; margin-top: 20px;'>
+                <a href="https://forms.gle/RYGRK5c7jhybijGz8" target="_blank">
+                    <button style="background-color: #00c1d8; color: white; border: none; padding: 10px 20px; 
+                    border-radius: 5px; cursor: pointer;">Feedback</button>
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
+
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
 
@@ -615,7 +661,7 @@ try:
     # Check if Streamlit is already running
     if os.getenv("STREAMLIT_RUNNING") != "true":
         # Ensure correct path to 'site_launch_v2.py' within the bundled environment
-        script = resource_path('site_launch_conv.py')  # Use the appropriate file path
+        script = resource_path('site_launch_conv_v2.py')  # Use the appropriate file path
         logger.info(script)
 
         # Set an environment variable to prevent recursive invocation
