@@ -210,8 +210,8 @@ def setup_streamlit():
         sbert_model = SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L6-v2")
 
         # Initialize LM Studio client http://172.29.15.223:8000/
-        client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        # client = OpenAI(base_url="http://172.29.15.223:8000/v1", api_key="lm-studio")  # P15 LM Studio
+        client = OpenAI(base_url="http://127.0.0.1:8000/v1", api_key="lm-studio") # LOCAL LM Studio
+        # client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
 
         # Define confidence threshold
         DISTANCE_THRESHOLD = 0.5
@@ -255,6 +255,8 @@ def setup_streamlit():
             return contextualized_response, average_distance, filtered_solutions
 
         # Define a function to contextualize the output using LM Studio
+        import requests
+
         def contextualize_response(problem, solutions_with_confidences):
             conversation_history = [
                 {"role": "system",

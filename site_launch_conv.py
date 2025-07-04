@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Enable wide mode
-st.set_page_config(page_title="ChatCOB", layout="wide")
+st.set_page_config(page_title="BramBot", layout="wide")
 
 @concurrency_limiter(max_concurrency=1)
 def dataset_setup(input_file="MIR Exports2024_17_10_18_41_21.xlsx",
@@ -231,7 +231,7 @@ def setup_streamlit():
 
         # Initialize LM Studio client
         # client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        client = OpenAI(base_url="http://172.30.178.142:8000/v1", api_key="lm-studio")  # P15 LM Studio
+        client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
 
         # Load dataset for solutions
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
@@ -573,7 +573,7 @@ def setup_streamlit():
             unsafe_allow_html=True
         )
 
-        st.title("Welcome to ChatCOB")
+        st.title("Welcome to BramBot")
         st.caption("You are accountable for everything that you say to the client. Use responses from this site to your discretion.")
 
         # Display the chat history
