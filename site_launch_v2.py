@@ -9,20 +9,16 @@ import pandas as pd
 import joblib
 import streamlit as st
 from openai import OpenAI
-import lmstudio as lms
 import sys
 from transformers import AutoTokenizer, AutoModel
 import os
-import nltk
-
-nltk.download('stopwords')
-nltk.download('punkt')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Enable wide mode
-st.set_page_config(page_title="BramBot", layout="wide")
+st.set_page_config(page_title="ChatGPIT", layout="wide")
+
 
 def tokenize_and_remove_stopwords(text):
     # Tokenization and removing stopwords
@@ -81,7 +77,8 @@ def setup_once():
         # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
         logger.info("Running 'main_knn_new_copy.py'...")
         try:
-            df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path as necessary
+            df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'),
+                             encoding='latin1')  # Adjust file path as necessary
         except FileNotFoundError as e:
             print(f"FileNotFoundError: {e}")
             exit(1)
@@ -114,8 +111,10 @@ def setup_once():
         logger.error(f"Error running 'main_knn_new_copy.py': {e}")
         exit(-1)
 
+
 # Call the cached setup function
 setup_once()
+
 
 def setup_streamlit():
     try:
@@ -125,8 +124,7 @@ def setup_streamlit():
 
         # Initialize LM Studio client http://172.29.15.223:8000/
         # client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        # client = OpenAI(base_url="http://172.29.15.223:8000/v1", api_key="lm-studio")  # P15 LM Studio
-        model = lms.llm("google/gemma-3-4b")  # Or your preferred model
+        client = OpenAI(base_url="http://172.29.15.223:8000/v1", api_key="lm-studio")  # P15 LM Studio
 
         # Load dataset for solutions
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
@@ -171,21 +169,41 @@ def setup_streamlit():
         def contextualize_response(problem, solutions_with_confidences):
             labeled_solutions = "\n".join([f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
                                            for i, (sol, conf) in enumerate(solutions_with_confidences)])
+            history = [
+                {"role": "system",
+                 "content": "You are an intelligent assistant. You always provide well-reasoned answers that are both correct "
+                            "and helpful."},
+                {"role": "user",
+                 "content": f"The problem is: '{problem}'. The predicted solutions are: {labeled_solutions}. Your task is to "
+                            f"combine, aggregate, and average the predicted solutions, and present them in a clear, "
+                            f"structured sentence. When explaining, address the user as if you are an IT Support agent and "
+                            f"provide actionable instructions without using phrases like \"the solution\" since the user is "
+                            f"unfamiliar with that term. Assume full ownership of the knowledge you are providing, "
+                            f"instructing the user as if you are the sole expert. Avoid starting with phrases like \"Sure, "
+                            f"here's the solution:\". Do not mention that you are an AI chatbot or reference the fact that "
+                            f"solutions were predicted. If the provided solution is detailed, you may use it verbatim instead "
+                            f"of summarizing it. Ensure your response is strictly relevant to the predicted solutions without "
+                            f"adding any external information. If a predicted solution is not relevant, you must not use it."
+                            f" Do not create or fabricate information. Only use the provided "
+                            f"solutions as your source. Your response should be authoritative and direct, tailored to help an "
+                            f"IT Support agent effectively resolve the issue. Do not use Markdown in your response."
+                            f"Ignore the confidence levels in the predicted solutions entirely, they are NOT for your use."
+                            f"Avoid any specific dates, names, serial numbers, or any specific information in general."
+                            f"Be incredibly detailed, verbose, thorough and descriptive in your troubleshooting advice."}
+            ]
 
-            prompt = (
-                f"The problem is: '{problem}'. The predicted solutions are: {labeled_solutions}. Your task is to "
-                f"combine, aggregate, generalize and average the predicted solutions, and present them in a clear, "
-                f"structured sentence. When explaining, address the user as if you are an IT Support agent and "
-                f"provide actionable instructions without using phrases like \"the solution\". Assume full ownership "
-                f"of the knowledge you are providing, instructing the user as if you are the sole expert. Avoid starting "
-                f"with phrases like \"Sure, here's the solution:\". Do not mention that you are an AI chatbot or reference "
-                f"the fact that solutions were predicted. Use only the provided solutions without adding anything external. "
-                f"Be incredibly detailed, verbose, and descriptive in your troubleshooting advice. Generalize the solutions"
-                f"so that they are not specific to the predictions given to you, removing specific names and ticket numbers."
+            completion = client.chat.completions.create(
+                model="model-identifier",
+                messages=history,
+                temperature=0.7,
+                stream=True,
             )
 
-            model = lms.llm("google/gemma-3-4b")
-            response = model.respond(prompt)
+            response = ""
+            for chunk in completion:
+                if chunk.choices[0].delta.content:
+                    response += chunk.choices[0].delta.content
+
             return response
 
         if 'messages' not in st.session_state:
@@ -368,7 +386,7 @@ def setup_streamlit():
             unsafe_allow_html=True
         )
 
-        st.title("Welcome to BramBot")
+        st.title("Welcome to ChatGPIT")
 
         # Display the chat history
         for message in st.session_state['messages']:
@@ -406,6 +424,7 @@ def setup_streamlit():
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
+
 
 setup_streamlit()
 

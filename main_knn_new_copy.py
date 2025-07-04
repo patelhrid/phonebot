@@ -9,6 +9,9 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
+import lmstudio as lms
+
+
 import os
 import sys
 
