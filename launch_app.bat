@@ -3,7 +3,7 @@ cd /d %~dp0
 
 echo Starting BramBot...
 
-REM Use the Python from your virtual environment
+REM Use the Python from your venv
 call .venv\Scripts\activate
 
 REM Launch Streamlit using that Python
