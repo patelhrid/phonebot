@@ -2,7 +2,6 @@ import datetime
 import subprocess
 import logging
 import re
-from pydoc import classname
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -16,9 +15,7 @@ from openai import OpenAI
 import sys
 from transformers import AutoTokenizer, AutoModel
 import os
-import faiss
 from streamlit_extras.concurrency_limiter import concurrency_limiter
-
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -27,7 +24,11 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="BramBot", layout="wide")
 
 @concurrency_limiter(max_concurrency=1)
-def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx", knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
+def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
+                  knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
+    if os.path.exists(output_file):
+        logger.info("Dataset already exists. Skipping generation.")
+        return
     try:
         # Load the main dataset
         df = pd.read_excel(input_file)
@@ -37,10 +38,10 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx", knowledge_art
         df = df[columns_to_keep]
 
         # Filter rows to keep only the ones with 'Resolved' status
-        df = df[df['Status'].isin(['Resolved', 'Closed'])]
+        df = df[df['Status'] == 'Resolved']
 
         # Remove rows where 'Resolution' has unwanted values (case-insensitive)
-        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other', 'see notes']
+        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other']
         df = df[~df['Resolution'].str.strip().str.lower().isin(unwanted_solutions)]
 
         # Remove rows where 'Resolution' is empty
@@ -102,7 +103,30 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx", knowledge_art
     except Exception as e:
         print(f"An error occurred: {e}")
 
-dataset_setup()
+
+# Function to save chat history as a log file
+@concurrency_limiter(max_concurrency=1)
+def save_chat_history():
+    # Create Logs folder if it doesn't exist
+    logs_folder = "Logs"
+    if not os.path.exists(logs_folder):
+        os.makedirs(logs_folder)
+
+    # Format the chat history
+    chat_history = st.session_state.get('messages', [])
+    log_content = "\n".join(
+        f"{entry['sender']}: {entry['message']}" for entry in chat_history
+    )
+
+    # Generate a unique filename based on the timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    filename = os.path.join(logs_folder, f"LOG_{timestamp}.txt")
+
+    # Write the log content to the file
+    with open(filename, "w") as log_file:
+        log_file.write(log_content)
+
+    st.success(f"Chat history saved to {filename}!")
 
 @concurrency_limiter(max_concurrency=1)
 def tokenize_and_remove_stopwords(text):
@@ -113,8 +137,8 @@ def tokenize_and_remove_stopwords(text):
     return ' '.join(filtered_tokens)
 
 
-# Clean text: lowercase, remove extra spaces and punctuation
 @concurrency_limiter(max_concurrency=1)
+# Clean text: lowercase, remove extra spaces and punctuation
 def clean_text(text):
     text = text.lower()  # Convert to lowercase
     text = re.sub(r'[^a-zA-Z\s]', '', text)  # Remove punctuation
@@ -146,143 +170,86 @@ def resource_path(relative_path):
     return absolute_path
 
 
+@concurrency_limiter(max_concurrency=1)
 @st.cache_resource
 def setup_once():
-    if hasattr(sys, '_MEIPASS'):
-        # Running in the PyInstaller bundled environment
-        base_path = sys._MEIPASS
-    else:
-        # Running as a normal Python script
-        base_path = os.path.dirname(os.path.abspath(__file__))
+    if os.path.exists("faiss_index.bin") and os.path.exists("tickets_dataset.pkl"):
+        logger.info("Using cached FAISS index and dataset.")
+        return
 
-    cache_dir = os.path.join(base_path, "cache_dir")
-    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
-    model = AutoModel.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
+    logger.info("Generating embeddings and building FAISS index...")
 
-    try:
-        # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
-        logger.info("Running 'main_knn_new_copy.py'...")
-        try:
-            df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'),
-                             encoding='latin1')  # Adjust file path as necessary
-        except FileNotFoundError as e:
-            print(f"FileNotFoundError: {e}")
-            exit(1)
+    df = pd.read_csv("tickets_dataset_NEW.csv", encoding="utf-8")
+    df['Problem_cleaned'] = df['Problem'].apply(clean_text).apply(tokenize_and_remove_stopwords)
 
-        df['Problem_cleaned'] = df['Problem'].apply(clean_text)
-        df['Problem_cleaned'] = df['Problem_cleaned'].apply(tokenize_and_remove_stopwords)
+    sbert_model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+    embeddings = sbert_model.encode(df['Problem_cleaned'].tolist(), convert_to_tensor=False)
+    embeddings = np.array(embeddings).astype('float32')
 
-        # Load SBERT model
-        sbert_model = SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_folder=cache_dir)
+    # Use FAISS
+    import faiss
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(embeddings)
 
-        # Load dataset
-        df = pd.read_csv("tickets_dataset_NEW.csv", encoding="utf-8")
-        df['Problem_cleaned'] = df['Problem'].apply(clean_text)
+    faiss.write_index(index, "faiss_index.bin")
+    joblib.dump(df, "tickets_dataset.pkl")
+    joblib.dump(sbert_model, "sbert_model.pkl")
 
-        # Generate embeddings
-        print("Generating SBERT embeddings...")
-        embeddings = sbert_model.encode(df['Problem_cleaned'].tolist(), convert_to_tensor=False)
-        embeddings = np.array(embeddings, dtype=np.float32)  # Convert to NumPy
-
-        # Initialize FAISS index
-        dimension = embeddings.shape[1]  # Vector size
-        index = faiss.IndexFlatL2(dimension)  # L2 distance (Euclidean)
-        index.add(embeddings)  # Add vectors to FAISS index
-
-        # Save FAISS index and dataset
-        faiss.write_index(index, "faiss_index.bin")
-        joblib.dump(df, "tickets_dataset.pkl")
-
-        print("FAISS index and dataset saved successfully.")
-
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Error running 'main_knn_new_copy.py': {e}")
-        exit(-1)
+    logger.info("FAISS index and data saved.")
 
 
 # Call the cached setup function
 setup_once()
 
-# Function to save chat history as a log file
-@concurrency_limiter(max_concurrency=1)
-def save_chat_history():
-    # Create Logs folder if it doesn't exist
-    logs_folder = "Logs"
-    if not os.path.exists(logs_folder):
-        os.makedirs(logs_folder)
-
-    # Format the chat history
-    chat_history = st.session_state.get('messages', [])
-    log_content = "\n".join(
-        f"{entry['sender']}: {entry['message']}" for entry in chat_history
-    )
-
-    # Generate a unique filename based on the timestamp
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
-    filename = os.path.join(logs_folder, f"LOG_{timestamp}.txt")
-
-    # Write the log content to the file
-    with open(filename, "w") as log_file:
-        log_file.write(log_content)
-
-    st.success(f"Chat history saved to {filename}!")
-
 @concurrency_limiter(max_concurrency=1)
 def setup_streamlit():
     try:
-        # Load model and vectorizer (SBERT-based KNN model)
-        index = faiss.read_index("faiss_index.bin")
-        df = joblib.load("tickets_dataset.pkl")
-        sbert_model = SentenceTransformer("sentence-transformers/paraphrase-MiniLM-L6-v2")
+        import faiss
+        faiss_index = faiss.read_index("faiss_index.bin")
+        df1 = joblib.load("tickets_dataset.pkl")
+        sbert_model = joblib.load("sbert_model.pkl")
 
-        # Initialize LM Studio client http://172.29.15.223:8000/
-        client = OpenAI(base_url="http://127.0.0.1:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        # client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
+        # Initialize LM Studio client
+        # client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
+        client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
+
+        # Load dataset for solutions
+        df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
 
         # Define confidence threshold
         DISTANCE_THRESHOLD = 0.5
 
         # Function to predict and contextualize solution for a given problem
+        @concurrency_limiter(max_concurrency=1)
         def handle_problem(problem_description):
-            """Finds the 3 most relevant solutions using FAISS vector search."""
             preprocessed_description = clean_text(problem_description)
+            preprocessed_description = tokenize_and_remove_stopwords(preprocessed_description)
+
             query_embedding = sbert_model.encode([preprocessed_description], convert_to_tensor=False)
+            distances, indices = faiss_index.search(np.array(query_embedding, dtype=np.float32), k=3)
 
-            # FAISS search for top 3 results
-            distances, indices = index.search(np.array(query_embedding, dtype=np.float32), 3)
-
-            # Extract solutions with confidence scores
             closest_solutions_with_confidences = [
-                (df.iloc[indices[0][i]]['Solution'], distances[0][i])
+                (df1.iloc[indices[0][i]]['Solution'], distances[0][i])
                 for i in range(len(indices[0]))
+                if distances[0][i] <= DISTANCE_THRESHOLD
             ]
 
-            # Filter based on confidence threshold
-            filtered_solutions = [
-                (solution, confidence)
-                for solution, confidence in closest_solutions_with_confidences
-                if confidence <= DISTANCE_THRESHOLD
-            ]
-
-            if not filtered_solutions:
+            if not closest_solutions_with_confidences:
                 logger.info("No reliable solutions found.")
                 return (
                     "No immediate solutions found. Consider refining your query or consulting an expert.",
                     1.0,
-                    closest_solutions_with_confidences,  # Return closest even if over threshold
+                    None
                 )
 
-            # Compute average confidence
-            average_distance = sum(conf for _, conf in filtered_solutions) / len(filtered_solutions)
+            average_distance = sum(conf for _, conf in closest_solutions_with_confidences) / len(
+                closest_solutions_with_confidences)
+            contextualized_response = contextualize_response(problem_description, closest_solutions_with_confidences)
 
-            # Contextualize response (optional, if you have a function for it)
-            contextualized_response = contextualize_response(problem_description, filtered_solutions)
-
-            return contextualized_response, average_distance, filtered_solutions
+            return contextualized_response, average_distance, closest_solutions_with_confidences
 
         # Define a function to contextualize the output using LM Studio
-        import requests
-
+        @concurrency_limiter(max_concurrency=1)
         def contextualize_response(problem, solutions_with_confidences):
             conversation_history = [
                 {"role": "system",
@@ -344,11 +311,13 @@ def setup_streamlit():
             st.session_state['show_solution'] = False
 
         # Function to add a message to the chat history
+        @concurrency_limiter(max_concurrency=1)
         def add_message(sender, message):
             st.session_state['messages'].append({"sender": sender, "message": message})
             # st.session_state['all_follow_up'].append(message)
 
         # Function to handle sending a message
+        @concurrency_limiter(max_concurrency=1)
         def send_message():
             problem_description = st.session_state.input_text
             if problem_description:
@@ -402,12 +371,14 @@ def setup_streamlit():
                             add_message("Assistant", response)
 
         # Function to handle follow-up messages and contextualize the response
+        @concurrency_limiter(max_concurrency=1)
         def handle_follow_up(full_context):
             # Now full_context includes the initial problem and all follow-up messages
             response = contextualize_response(full_context,
                                               st.session_state['predicted_solutions_with_confidences'])
             return response
 
+        @concurrency_limiter(max_concurrency=1)
         def should_requery(problem_description):
             requery_keywords = ['didn’t work', 'not solved', 'try again', 'recheck', 'failed', 'problem persists']
             retry_indicators = ['retry', 'recheck', 'check again', 'try again']
@@ -524,7 +495,7 @@ def setup_streamlit():
                 height: 100%;
                 overflow-y: auto; /* Allow scroll for content above the input box */
             }
-        
+
             /* Style for the chat input container fixed at the bottom */
             .chat-input-container {
                 position: fixed;
@@ -539,7 +510,7 @@ def setup_streamlit():
                 box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
                 z-index: 9999;
             }
-        
+
             /* Style for the chat input field */
             .chat-input {
                 flex-grow: 1;
@@ -551,11 +522,11 @@ def setup_streamlit():
                 box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
                 transition: border-color 0.2s;
             }
-        
+
             .chat-input:focus {
                 border-color: #00c1d8;
             }
-        
+
             /* Style for the send button */
             .chat-send-button {
                 background-color: #00c1d8;
@@ -572,7 +543,7 @@ def setup_streamlit():
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 transition: background-color 0.2s, transform 0.2s;
             }
-        
+
             .chat-send-button:hover {
                 background-color: #009fb2;
                 transform: scale(1.1);
@@ -582,6 +553,7 @@ def setup_streamlit():
         )
 
         st.title("Welcome to BramBot")
+        st.caption("You are accountable for everything that you say to the client. Use responses from this site to your discretion.")
 
         # Display the chat history
         for message in st.session_state['messages']:
@@ -598,14 +570,13 @@ def setup_streamlit():
         if 'predicted_solutions_with_confidences' in st.session_state:
             st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions",
                                                             st.session_state['show_solution'])
-            if st.session_state['show_solution']:
+            if st.session_state['show_solution'] and st.session_state['predicted_solutions_with_confidences'] is not None:
                 solutions_text = "\n\n".join(
                     [f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
                      for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
                 )
                 st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
-        # Input text box and send button at the bottom
         # Input text box and send button at the bottom
         with st.container():
             cols = st.columns([4, 1])  # Adjust the column width ratio
@@ -653,28 +624,3 @@ def setup_streamlit():
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
 
 setup_streamlit()
-
-# logger.info("ATTEMPTING TO RUN STREAMLIT COMMAND")
-
-try:
-    # setup_once()
-    # Check if Streamlit is already running
-    if os.getenv("STREAMLIT_RUNNING") != "true":
-        # Ensure correct path to 'site_launch_v2.py' within the bundled environment
-        script = resource_path('site_launch_conv_v2.py')  # Use the appropriate file path
-        logger.info(script)
-
-        # Set an environment variable to prevent recursive invocation
-        os.environ["STREAMLIT_RUNNING"] = "true"
-
-        logger.info("Running Streamlit app...")
-
-        # Launch the Streamlit app using subprocess
-        subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false'],
-                       check=True)
-        os.system(f"streamlit run {script} --server.enableXsrfProtection=false")
-    else:
-        logger.info("Streamlit app is already running.")
-
-except subprocess.CalledProcessError as e:
-    logger.error(f"Error running Streamlit: {e}")
