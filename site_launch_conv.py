@@ -230,8 +230,8 @@ def setup_streamlit():
         sbert_model = joblib.load('sbert_model.pkl')
 
         # Initialize LM Studio client
-        # client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
+        client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
+        # client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
 
         # Load dataset for solutions
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
@@ -648,23 +648,23 @@ def setup_streamlit():
 setup_streamlit()
 
 
-try:
-    # Check if Streamlit is already running
-    if os.getenv("STREAMLIT_RUNNING") != "true":
-        script = resource_path('site_launch_conv.py')  # Use the appropriate file path
-        logger.info(script)
-
-        # Set an environment variable to prevent recursive invocation
-        os.environ["STREAMLIT_RUNNING"] = "true"
-
-        logger.info("Running Streamlit app...")
-
-        # Launch the Streamlit app using subprocess
-        subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false', '--server.port', '8501'],
-                       check=True)
-        os.system(f"streamlit run {script} --server.enableXsrfProtection=false")
-    else:
-        logger.info("Streamlit app is already running.")
-
-except subprocess.CalledProcessError as e:
-    logger.error(f"Error running Streamlit: {e}")
+# try:
+#     # Check if Streamlit is already running
+#     if os.getenv("STREAMLIT_RUNNING") != "true":
+#         script = resource_path('site_launch_conv.py')  # Use the appropriate file path
+#         logger.info(script)
+#
+#         # Set an environment variable to prevent recursive invocation
+#         os.environ["STREAMLIT_RUNNING"] = "true"
+#
+#         logger.info("Running Streamlit app...")
+#
+#         # Launch the Streamlit app using subprocess
+#         subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false', '--server.port', '8501'],
+#                        check=True)
+#         os.system(f"streamlit run {script} --server.enableXsrfProtection=false")
+#     else:
+#         logger.info("Streamlit app is already running.")
+#
+# except subprocess.CalledProcessError as e:
+#     logger.error(f"Error running Streamlit: {e}")

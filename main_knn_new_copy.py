@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import time
 
 import lmstudio as lms
 
@@ -73,8 +74,12 @@ df['Problem_cleaned'] = df['Problem_cleaned'].apply(tokenize_and_remove_stopword
 sbert_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 # Generate SBERT embeddings for all problems
-print("Generating SBERT embeddings...")
-embeddings = sbert_model.encode(df['Problem_cleaned'].tolist(), convert_to_tensor=True)
+time_threshold = 24 * 60 * 60  # seconds in 24 hours
+file_path = "sbert_model.pkl"
+# Check if file does NOT exist or is older than 24 hours
+if not os.path.exists(file_path) or (time.time() - os.path.getmtime(file_path)) > time_threshold:
+    print("Generating SBERT embeddings...")
+    embeddings = sbert_model.encode(df['Problem_cleaned'].tolist(), convert_to_tensor=True)
 
 # Convert tensor embeddings to a numpy array
 embeddings = embeddings.cpu().numpy()
