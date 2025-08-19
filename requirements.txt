@@ -6,6 +6,7 @@ openai
 os
 pandas
 re
+requests
 sentence_transformers
 sklearn
 streamlit

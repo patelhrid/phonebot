@@ -1,8 +1,11 @@
 import datetime
+import random
 import subprocess
 import logging
 import re
+import time
 
+import requests
 from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
 from nltk.corpus import stopwords
@@ -23,7 +26,7 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="BramBot", layout="wide")
 
 @concurrency_limiter(max_concurrency=1)
-def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
+def dataset_setup(input_file="MIR Exports2025_19_8_16_47_24.xlsx",
                   knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
     try:
         # Load the main dataset
@@ -34,10 +37,14 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
         df = df[columns_to_keep]
 
         # Filter rows to keep only the ones with 'Resolved' status
-        df = df[df['Status'] == 'Resolved']
+        df = df[df['Status'] == 'Closed']
+
+        # Normalize the Resolution column
+        df['Resolution'] = df['Resolution'].astype(str).str.replace(" (Automatically Closed)", "",
+                                                                    regex=False).str.strip()
 
         # Remove rows where 'Resolution' has unwanted values (case-insensitive)
-        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other']
+        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other','done', "completed."]
         df = df[~df['Resolution'].str.strip().str.lower().isin(unwanted_solutions)]
 
         # Remove rows where 'Resolution' is empty
@@ -181,15 +188,38 @@ def setup_once():
     model = AutoModel.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
 
     try:
-        # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
-        logger.info("Running 'setup'...")
         try:
-            df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'),
-                             encoding='latin1')  # Adjust file path as necessary
-        except FileNotFoundError as e:
-            print(f"FileNotFoundError: {e}")
-            exit(1)
+            # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
+            logger.info("Running 'setup'...")
 
+            dataset_path = resource_path('tickets_dataset_NEW.csv')
+
+            # Check if the dataset exists
+            if not os.path.exists(dataset_path):
+                logger.info("Dataset not found. Running dataset_setup()...")
+                dataset_setup()
+            else:
+                # Check last modified time
+                last_modified = os.path.getmtime(dataset_path)
+                age_hours = (time.time() - last_modified) / 3600
+
+                if age_hours > 24:
+                    logger.info(f"Dataset is older than 24 hours ({age_hours:.1f}h). Rebuilding...")
+                    dataset_setup()
+                else:
+                    logger.info(f"Dataset is fresh ({age_hours:.1f}h old). Using existing file.")
+
+            # Now load the dataset
+            df = pd.read_csv(dataset_path, encoding='latin1')
+
+        except FileNotFoundError as e:
+            logger.error(f"Dataset file missing even after setup: {e}")
+            dataset_setup()
+
+        # Now load the dataset
+        df = pd.read_csv(dataset_path, encoding='latin1')
+
+        # Preprocess problems
         df['Problem_cleaned'] = df['Problem'].apply(clean_text)
         df['Problem_cleaned'] = df['Problem_cleaned'].apply(tokenize_and_remove_stopwords)
 
@@ -237,7 +267,7 @@ def setup_streamlit():
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
 
         # Define confidence threshold
-        DISTANCE_THRESHOLD = 0.5
+        DISTANCE_THRESHOLD = 0.75
 
         # Function to predict and contextualize solution for a given problem
         @concurrency_limiter(max_concurrency=1)
@@ -310,10 +340,22 @@ def setup_streamlit():
                             f"Always remember to be detailed in your responses, without worrying about output length."}
             )
 
+            # Get list of loaded models
+            response = requests.get("http://localhost:8000/v1/models")
+            models_data = response.json()
+
+            # Extract the list from the 'data' key
+            model_list = models_data.get("data", [])
+
+            # Randomly select a model
+            selected_model = ""
+            while selected_model == "text-embedding-nomic-embed-text-v1.5" or selected_model == "":
+                selected_model = random.choice(model_list)["id"]
+
             completion = client.chat.completions.create(
-                model="model-identifier",
+                model=selected_model,
                 messages=conversation_history,
-                temperature=0.7,
+                temperature=0.1,
                 stream=True,
             )
 
@@ -321,6 +363,8 @@ def setup_streamlit():
             for chunk in completion:
                 if chunk.choices[0].delta.content:
                     response += chunk.choices[0].delta.content
+
+            response += "\n \n (Generated by " + selected_model + ")"
 
             return response
 
@@ -352,7 +396,7 @@ def setup_streamlit():
 
                     add_message("Assistant", "Thinking...")
                     with st.spinner("Generating response..."):
-                        response, average_distance, predicted_solutions_with_confidences = handle_problem(
+                        response, average_distance, predicted_solutions_with_confidences, _ = handle_problem(
                             problem_description)
                         st.session_state['messages'].pop()
                         add_message("Assistant", response)
@@ -375,7 +419,7 @@ def setup_streamlit():
 
                         add_message("Assistant", "Thinking...")
                         with st.spinner("Generating response..."):
-                            response, average_distance, predicted_solutions_with_confidences = handle_problem(
+                            response, average_distance, predicted_solutions_with_confidences, _ = handle_problem(
                                 full_context)
                             st.session_state['messages'].pop()
                             add_message("Assistant", response)
@@ -597,8 +641,9 @@ def setup_streamlit():
             if st.session_state['show_solution'] and st.session_state['predicted_solutions_with_confidences'] is not None:
                 solutions_text = "\n\n".join(
                     [
-                        f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}% | Ticket #: {df['Ticket #'].iloc[st.session_state['solution_indices'][i]]}): {sol}"
-                        for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
+                        f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}% | Ticket #: {int(df['Ticket #'].iloc[st.session_state['solution_indices'][i]])}): {sol}"
+                        for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])
+                    ]
                 )
 
                 st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
