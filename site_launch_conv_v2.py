@@ -645,10 +645,19 @@ def setup_streamlit():
             st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions",
                                                             st.session_state['show_solution'])
 
-            if st.session_state['show_solution'] and st.session_state['predicted_solutions_with_confidences'] is not None:
+            if st.session_state['show_solution'] and st.session_state[
+                'predicted_solutions_with_confidences'] is not None:
                 solutions_text = "\n\n".join(
                     [
-                        f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}% | Ticket #: {int(df['Ticket #'].iloc[st.session_state['solution_indices'][i]])}): {sol}"
+                        (
+                            f"Solution {i + 1} "
+                            f"(Confidence: {(1 - conf) * 100:.1f}% | "
+                            f"Ticket #: {(
+                                int(df['Ticket #'].iloc[st.session_state['solution_indices'][i]])
+                                if pd.notna(df['Ticket #'].iloc[st.session_state['solution_indices'][i]]) and str(df['Ticket #'].iloc[st.session_state['solution_indices'][i]]).strip() != ''
+                                else 'N/A'
+                            )}): {sol}"
+                        )
                         for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])
                     ]
                 )
