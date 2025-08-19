@@ -16,6 +16,11 @@ from transformers import AutoTokenizer, AutoModel
 import os
 from streamlit_extras.concurrency_limiter import concurrency_limiter
 
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -34,7 +39,7 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
         df = df[columns_to_keep]
 
         # Filter rows to keep only the ones with 'Resolved' status
-        df = df[df['Status'] == 'Resolved']
+        df = df[df['Status'] == 'Closed']
 
         # Remove rows where 'Resolution' has unwanted values (case-insensitive)
         unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other']
