@@ -3,7 +3,6 @@ import subprocess
 import logging
 import re
 
-import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
 from nltk.corpus import stopwords
@@ -26,9 +25,6 @@ st.set_page_config(page_title="BramBot", layout="wide")
 @concurrency_limiter(max_concurrency=1)
 def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
                   knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
-    if os.path.exists(output_file):
-        logger.info("Dataset already exists. Skipping generation.")
-        return
     try:
         # Load the main dataset
         df = pd.read_excel(input_file)
@@ -173,29 +169,54 @@ def resource_path(relative_path):
 @concurrency_limiter(max_concurrency=1)
 @st.cache_resource
 def setup_once():
-    if os.path.exists("faiss_index.bin") and os.path.exists("tickets_dataset.pkl"):
-        logger.info("Using cached FAISS index and dataset.")
-        return
+    if hasattr(sys, '_MEIPASS'):
+        # Running in the PyInstaller bundled environment
+        base_path = sys._MEIPASS
+    else:
+        # Running as a normal Python script
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
-    logger.info("Generating embeddings and building FAISS index...")
+    cache_dir = os.path.join(base_path, "cache_dir")
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
+    model = AutoModel.from_pretrained("sentence-transformers/paraphrase-MiniLM-L6-v2", cache_dir=cache_dir)
 
-    df = pd.read_csv("tickets_dataset_NEW.csv", encoding="utf-8")
-    df['Problem_cleaned'] = df['Problem'].apply(clean_text).apply(tokenize_and_remove_stopwords)
+    try:
+        # Run 'main_knn_new_copy.py' using the same interpreter that runs this script
+        logger.info("Running 'setup'...")
+        try:
+            df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'),
+                             encoding='latin1')  # Adjust file path as necessary
+        except FileNotFoundError as e:
+            print(f"FileNotFoundError: {e}")
+            exit(1)
 
-    sbert_model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
-    embeddings = sbert_model.encode(df['Problem_cleaned'].tolist(), convert_to_tensor=False)
-    embeddings = np.array(embeddings).astype('float32')
+        df['Problem_cleaned'] = df['Problem'].apply(clean_text)
+        df['Problem_cleaned'] = df['Problem_cleaned'].apply(tokenize_and_remove_stopwords)
 
-    # Use FAISS
-    import faiss
-    index = faiss.IndexFlatL2(embeddings.shape[1])
-    index.add(embeddings)
+        # Load Sentence-BERT model for embeddings
+        sbert_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
-    faiss.write_index(index, "faiss_index.bin")
-    joblib.dump(df, "tickets_dataset.pkl")
-    joblib.dump(sbert_model, "sbert_model.pkl")
+        # Generate SBERT embeddings for all problems
+        print("Generating SBERT embeddings...")
+        embeddings = sbert_model.encode(df['Problem_cleaned'].tolist(), convert_to_tensor=True)
 
-    logger.info("FAISS index and data saved.")
+        # Convert tensor embeddings to a numpy array
+        embeddings = embeddings.cpu().numpy()
+
+        # Train KNN model using SBERT embeddings
+        knn = NearestNeighbors(n_neighbors=3, metric='cosine')  # Adjust n_neighbors if needed
+        knn.fit(embeddings)
+
+        # Save the trained KNN model and SBERT model
+        joblib.dump(knn, 'knn_sbert_model.pkl')
+        joblib.dump(sbert_model, 'sbert_model.pkl')
+
+        print("SBERT model and KNN model saved successfully.")
+        logger.info("'main_knn_new_copy.py' finished successfully.")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error running setup: {e}")
+        exit(-1)
 
 
 # Call the cached setup function
@@ -204,14 +225,13 @@ setup_once()
 @concurrency_limiter(max_concurrency=1)
 def setup_streamlit():
     try:
-        import faiss
-        faiss_index = faiss.read_index("faiss_index.bin")
-        df1 = joblib.load("tickets_dataset.pkl")
-        sbert_model = joblib.load("sbert_model.pkl")
+        # Load model and vectorizer (SBERT-based KNN model)
+        knn = joblib.load('knn_sbert_model.pkl')
+        sbert_model = joblib.load('sbert_model.pkl')
 
         # Initialize LM Studio client
-        # client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
-        client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
+        client = OpenAI(base_url="http://localhost:8000/v1", api_key="lm-studio") # LOCAL LM Studio
+        # client = OpenAI(base_url="http://172.30.89.86:8000/v1", api_key="lm-studio")  # P15 LM Studio
 
         # Load dataset for solutions
         df = pd.read_csv(resource_path('tickets_dataset_NEW.csv'), encoding='latin1')  # Adjust file path
@@ -225,28 +245,31 @@ def setup_streamlit():
             preprocessed_description = clean_text(problem_description)
             preprocessed_description = tokenize_and_remove_stopwords(preprocessed_description)
 
-            query_embedding = sbert_model.encode([preprocessed_description], convert_to_tensor=False)
-            distances, indices = faiss_index.search(np.array(query_embedding, dtype=np.float32), k=3)
+            X_new_embedding = sbert_model.encode([preprocessed_description])
+            distances, indices = knn.kneighbors(X_new_embedding, n_neighbors=3)
+
+            st.session_state['solution_indices'] = indices[0]
 
             closest_solutions_with_confidences = [
-                (df1.iloc[indices[0][i]]['Solution'], distances[0][i])
+                (df['Solution'].iloc[indices[0][i]], distances[0][i])
                 for i in range(len(indices[0]))
                 if distances[0][i] <= DISTANCE_THRESHOLD
             ]
 
-            if not closest_solutions_with_confidences:
-                logger.info("No reliable solutions found.")
+            if len(closest_solutions_with_confidences) == 0:
+                logger.info("No reliable solutions found after requery.")
                 return (
-                    "No immediate solutions found. Consider refining your query or consulting an expert.",
+                    f"Based on the provided details, no immediate solutions could be identified. "
+                    f"Consider revisiting the initial context or seeking alternative expertise.",
                     1.0,
-                    None
+                    None,
                 )
 
             average_distance = sum(conf for _, conf in closest_solutions_with_confidences) / len(
                 closest_solutions_with_confidences)
             contextualized_response = contextualize_response(problem_description, closest_solutions_with_confidences)
 
-            return contextualized_response, average_distance, closest_solutions_with_confidences
+            return contextualized_response, average_distance, closest_solutions_with_confidences, indices
 
         # Define a function to contextualize the output using LM Studio
         @concurrency_limiter(max_concurrency=1)
@@ -570,11 +593,14 @@ def setup_streamlit():
         if 'predicted_solutions_with_confidences' in st.session_state:
             st.session_state['show_solution'] = st.checkbox("Show Predicted Solutions",
                                                             st.session_state['show_solution'])
+
             if st.session_state['show_solution'] and st.session_state['predicted_solutions_with_confidences'] is not None:
                 solutions_text = "\n\n".join(
-                    [f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}%): {sol}"
-                     for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
+                    [
+                        f"Solution {i + 1} (Confidence: {(1 - conf) * 100:.1f}% | Ticket #: {df['Ticket #'].iloc[st.session_state['solution_indices'][i]]}): {sol}"
+                        for i, (sol, conf) in enumerate(st.session_state['predicted_solutions_with_confidences'])]
                 )
+
                 st.text_area("Predicted Solutions:", solutions_text, height=150, disabled=True)
 
         # Input text box and send button at the bottom
@@ -623,4 +649,27 @@ def setup_streamlit():
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running 'chat_ui_new_copy.py' with Streamlit: {e}")
 
+
 setup_streamlit()
+
+
+# try:
+#     # Check if Streamlit is already running
+#     if os.getenv("STREAMLIT_RUNNING") != "true":
+#         script = resource_path('site_launch_conv.py')  # Use the appropriate file path
+#         logger.info(script)
+#
+#         # Set an environment variable to prevent recursive invocation
+#         os.environ["STREAMLIT_RUNNING"] = "true"
+#
+#         logger.info("Running Streamlit app...")
+#
+#         # Launch the Streamlit app using subprocess
+#         subprocess.run([sys.executable, '-m', 'streamlit', 'run', script, '--server.enableXsrfProtection=false', '--server.port', '8501'],
+#                        check=True)
+#         os.system(f"streamlit run {script} --server.enableXsrfProtection=false")
+#     else:
+#         logger.info("Streamlit app is already running.")
+#
+# except subprocess.CalledProcessError as e:
+#     logger.error(f"Error running Streamlit: {e}")
