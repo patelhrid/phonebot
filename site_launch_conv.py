@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="BramBot", layout="wide")
 
 @concurrency_limiter(max_concurrency=1)
-def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
+def dataset_setup(input_file="MIR Exports2025_19_8_16_47_24.xlsx",
                   knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
     try:
         # Load the main dataset
@@ -41,8 +41,12 @@ def dataset_setup(input_file="MIR Exports2025_04_7_15_09_53.xlsx",
         # Filter rows to keep only the ones with 'Resolved' status
         df = df[df['Status'] == 'Closed']
 
+        # Normalize the Resolution column
+        df['Resolution'] = df['Resolution'].astype(str).str.replace(" (Automatically Closed)", "",
+                                                                    regex=False).str.strip()
+
         # Remove rows where 'Resolution' has unwanted values (case-insensitive)
-        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other']
+        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other','done', "completed."]
         df = df[~df['Resolution'].str.strip().str.lower().isin(unwanted_solutions)]
 
         # Remove rows where 'Resolution' is empty
