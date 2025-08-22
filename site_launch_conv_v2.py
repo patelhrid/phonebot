@@ -250,7 +250,8 @@ def setup_once():
 
 
 # Call the cached setup function
-setup_once()
+# setup_once()
+
 
 @concurrency_limiter(max_concurrency=1)
 def setup_streamlit():
@@ -384,6 +385,63 @@ def setup_streamlit():
             st.session_state['messages'].append({"sender": sender, "message": message})
             # st.session_state['all_follow_up'].append(message)
 
+        # Place this helper once at the top of your file
+        def show_thinking_bubble(container, text="Thinking"):
+            html = f"""
+            <style>
+            .assistant-thinking {{
+                background-color: #004b9a;
+                color: white;
+                border-radius: 15px 15px 15px 0;
+                padding: 12px 16px;
+                margin: 10px 0;
+                width: fit-content;
+                max-width: 70%;
+                text-align: left;
+                margin-right: auto;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                font-size: 14px;
+                line-height: 1.5;
+                font-family: 'Parkinsans', sans-serif;
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+            }}
+            .think-dots {{
+                display: inline-flex;
+                gap: 6px;
+                align-items: center;
+            }}
+            .think-dot {{
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: white;
+                opacity: .5;
+                transform: translateY(0);
+                animation: think-bounce 0.9s infinite ease-in-out;
+            }}
+            .think-dot:nth-child(2) {{ animation-delay: 0.12s; }}
+            .think-dot:nth-child(3) {{ animation-delay: 0.24s; }}
+
+            @keyframes think-bounce {{
+                0%   {{ transform: translateY(0); opacity:.5; }}
+                50%  {{ transform: translateY(-6px); opacity:1; }}
+                100% {{ transform: translateY(0); opacity:.5; }}
+            }}
+            </style>
+
+            <div class="assistant-thinking" role="status" aria-live="polite">
+              <div style="white-space:nowrap;">{text}</div>
+              <div class="think-dots" aria-hidden="true">
+                <div class="think-dot"></div>
+                <div class="think-dot"></div>
+                <div class="think-dot"></div>
+              </div>
+            </div>
+            """
+            container.markdown(html, unsafe_allow_html=True)
+
         # Function to handle sending a message
         @concurrency_limiter(max_concurrency=1)
         def send_message():
@@ -391,58 +449,66 @@ def setup_streamlit():
             if problem_description:
                 if 'initial_problem' not in st.session_state:
                     st.session_state['initial_problem'] = problem_description
-                    st.session_state["all_follow_up"] = []  # Initialize follow-up messages
-                    add_message("User", problem_description)
+                    st.session_state["all_follow_up"] = []
+                    add_message("User", problem_description)  # ✅ User message stays
                     st.session_state.input_text = ""
 
-                    add_message("Assistant", "Thinking...")
-                    with st.spinner("Generating response..."):
-                        start_time = time.time()  # <<< start timing
-                        response, average_distance, predicted_solutions_with_confidences, _ = handle_problem(
-                            problem_description)
-                        end_time = time.time()  # <<< end timing
-                        elapsed = end_time - start_time
+                    # 🔹 Show thinking bubble (not part of messages)
+                    bubble_placeholder = st.empty()
+                    show_thinking_bubble(bubble_placeholder)
 
-                        st.session_state['messages'].pop()
-                        add_message("Assistant",
-                                    f"{response}\n\n(Response time: {elapsed:.2f} seconds)")  # <<< append to output
+                    start_time = time.time()
+                    response, average_distance, predicted_solutions_with_confidences, _ = handle_problem(
+                        problem_description)
+                    end_time = time.time()
+                    elapsed = end_time - start_time
 
-                        st.session_state['distance'] = average_distance
-                        st.session_state['predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
+                    # 🔹 Remove bubble once done
+                    bubble_placeholder.empty()
+
+                    # ❌ Do NOT pop user messages anymore
+                    add_message("Assistant", f"{response}\n\n(Response time: {elapsed:.2f} seconds)")
+
+                    st.session_state['distance'] = average_distance
+                    st.session_state['predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
                 else:
-                    # Append new message to all_follow_up
                     st.session_state["all_follow_up"].append(problem_description)
 
-                    # Combine the initial problem and all follow-ups for context
-                    full_context = f"{st.session_state['initial_problem']} "  # Include initial problem first
-                    for fo in st.session_state["all_follow_up"]:  # Include all follow-ups
+                    full_context = f"{st.session_state['initial_problem']} "
+                    for fo in st.session_state["all_follow_up"]:
                         full_context += f"Follow-up: {fo} "
 
                     if should_requery(full_context):
-                        # Re-query with updated context
                         st.session_state['initial_problem'] = full_context
                         add_message("User", problem_description)
                         st.session_state.input_text = ""
 
-                        add_message("Assistant", "Thinking...")
-                        with st.spinner("Generating response..."):
-                            response, average_distance, predicted_solutions_with_confidences, _ = handle_problem(
-                                full_context)
-                            st.session_state['messages'].pop()
-                            add_message("Assistant", response)
-                            st.session_state['distance'] = average_distance
-                            st.session_state[
-                                'predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
+                        bubble_placeholder = st.empty()
+                        show_thinking_bubble(bubble_placeholder)
+
+                        start_time = time.time()
+                        response, average_distance, predicted_solutions_with_confidences, _ = handle_problem(
+                            full_context)
+                        end_time = time.time()
+                        elapsed = end_time - start_time
+
+                        bubble_placeholder.empty()
+
+                        add_message("Assistant", f"{response}\n\n(Response time: {elapsed:.2f} seconds)")
+                        st.session_state['distance'] = average_distance
+                        st.session_state['predicted_solutions_with_confidences'] = predicted_solutions_with_confidences
                     else:
-                        # If it's a non-query follow-up, use the full context to handle response
                         add_message("User", problem_description)
                         st.session_state.input_text = ""
 
-                        add_message("Assistant", "Thinking...")
-                        with st.spinner("Generating response..."):
-                            response = handle_follow_up(full_context)  # Pass the full context, including all follow-ups
-                            st.session_state['messages'].pop()
-                            add_message("Assistant", response)
+                        bubble_placeholder = st.empty()
+                        show_thinking_bubble(bubble_placeholder)
+
+                        response = handle_follow_up(full_context)
+
+                        bubble_placeholder.empty()
+
+                        add_message("Assistant", f"{response}\n\n(Response time: {elapsed:.2f} seconds)")
 
         # Function to handle follow-up messages and contextualize the response
         @concurrency_limiter(max_concurrency=1)
