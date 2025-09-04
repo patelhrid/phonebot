@@ -26,85 +26,76 @@ logger = logging.getLogger(__name__)
 st.set_page_config(page_title="BramBot", layout="wide")
 
 @concurrency_limiter(max_concurrency=1)
-def dataset_setup(input_file="MIR Exports2025_19_8_16_47_24.xlsx",
-                  knowledge_articles_file="knowledge_articles_export.xlsx", output_file="tickets_dataset_NEW.csv"):
+def dataset_setup(input_file="latest incident export.xlsx",
+                  knowledge_articles_file="knowledge_articles_export.xlsx",
+                  output_file="tickets_dataset_NEW.csv"):
     try:
         # Load the main dataset
         df = pd.read_excel(input_file)
 
         # Keep only the necessary columns
-        columns_to_keep = ['Incident ID', 'Summary', 'Resolution', 'Status']
-        df = df[columns_to_keep]
+        df = df[['Incident ID', 'Summary', 'Resolution', 'Status']]
 
-        # Filter rows to keep only the ones with 'Resolved' status
-        df = df[df['Status'] == 'Closed']
+        # Filter rows with Closed or Resolved status
+        df = df[df['Status'].isin(['Closed', 'Resolved'])]
 
         # Normalize the Resolution column
-        df['Resolution'] = df['Resolution'].astype(str).str.replace(" (Automatically Closed)", "",
-                                                                    regex=False).str.strip()
+        df['Resolution'] = df['Resolution'].astype(str).str.replace(
+            " (Automatically Closed)", "", regex=False
+        ).str.strip()
 
-        # Remove rows where 'Resolution' has unwanted values (case-insensitive)
-        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test', 'duplicate', 'other','done', "completed."]
+        # Remove unwanted solutions
+        unwanted_solutions = ['.', '...', 'fixed', 'resolved', 'test',
+                              'duplicate', 'other','done', 'completed.']
         df = df[~df['Resolution'].str.strip().str.lower().isin(unwanted_solutions)]
 
-        # Remove rows where 'Resolution' is empty
+        # Remove rows with empty resolution
         df = df[df['Resolution'].str.strip() != '']
 
-        # Drop the 'Status' column since it's no longer needed
+        # Drop the 'Status' column
         df = df.drop(columns=['Status'])
 
-        # Rename the columns
+        # Rename columns
         df = df.rename(columns={
             'Incident ID': 'Ticket #',
             'Summary': 'Problem',
             'Resolution': 'Solution'
         })
 
-        # Export the result to a CSV file
-        df.to_csv("filtered_tickets_dataset.csv", index=False, encoding="utf-8")
-
-        # Paths to the files
-        tickets_file = "filtered_tickets_dataset.csv"  # Update with your file path
-
-        # Load the knowledge articles
+        # Load knowledge articles
         if knowledge_articles_file.endswith('.xlsx'):
             knowledge_articles = pd.read_excel(knowledge_articles_file)
         else:
             knowledge_articles = pd.read_csv(
                 knowledge_articles_file,
-                encoding="utf-8",  # Use UTF-8 for better character support
-                on_bad_lines='skip'  # Skip malformed lines
+                encoding="utf-8",
+                on_bad_lines='skip'
             )
 
-        # Filter for 'Published' articles
+        # Filter for Published
         knowledge_articles = knowledge_articles[knowledge_articles['Status'] == "Published"]
 
-        # Select the required columns
-        knowledge_articles = knowledge_articles[['Title']]
-
-        # Create new rows for the tickets dataset
+        # Create new rows
+        knowledge_articles = knowledge_articles[['Title']].copy()
         knowledge_articles['Problem'] = knowledge_articles['Title']
         knowledge_articles['Solution'] = knowledge_articles['Title'].apply(
             lambda title: f"Refer to the '{title}' knowledge article"
         )
-        knowledge_articles['Ticket #'] = ""  # Leave Ticket # blank
+        knowledge_articles['Ticket #'] = ""
 
-        # Keep only the required columns
         knowledge_articles = knowledge_articles[['Ticket #', 'Problem', 'Solution']]
 
-        # Load the existing tickets dataset
-        tickets_df = pd.read_csv(tickets_file, encoding="utf-8")
+        # Combine tickets + knowledge articles
+        updated_tickets_df = pd.concat([df, knowledge_articles], ignore_index=True)
 
-        # Append the knowledge articles to the tickets dataset
-        updated_tickets_df = pd.concat([tickets_df, knowledge_articles], ignore_index=True)
-
-        # Save the updated dataset
+        # Save final dataset
         updated_tickets_df.to_csv(output_file, index=False, encoding="utf-8")
 
-        print(f"Updated tickets dataset saved to {output_file}")
+        print(f"✅ Updated tickets dataset saved to {output_file}")
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"❌ An error occurred: {e}")
+
 
 
 # Function to save chat history as a log file
@@ -250,7 +241,7 @@ def setup_once():
 
 
 # Call the cached setup function
-# setup_once()
+setup_once()
 
 
 @concurrency_limiter(max_concurrency=1)
@@ -476,7 +467,7 @@ def setup_streamlit():
 
                     full_context = f"{st.session_state['initial_problem']} "
                     for fo in st.session_state["all_follow_up"]:
-                        full_context += f"Follow-up: {fo} "
+                        full_context += f"Follow-up: {fo}"
 
                     if should_requery(full_context):
                         st.session_state['initial_problem'] = full_context
@@ -504,10 +495,13 @@ def setup_streamlit():
                         bubble_placeholder = st.empty()
                         show_thinking_bubble(bubble_placeholder)
 
+                        start_time = time.time()
                         response = handle_follow_up(full_context)
+                        end_time = time.time()
 
                         bubble_placeholder.empty()
 
+                        elapsed = end_time - start_time
                         add_message("Assistant", f"{response}\n\n(Response time: {elapsed:.2f} seconds)")
 
         # Function to handle follow-up messages and contextualize the response
